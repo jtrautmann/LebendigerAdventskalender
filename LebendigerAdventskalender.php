@@ -41,7 +41,7 @@ class LebendigerAdventskalender {
 
     public function printAdminPage()
     {
-        include('admin.php');
+        include(dirname(__FILE__).'/admin.php');
     }
 
     public function autoload($class)
