@@ -36,7 +36,7 @@ class DataHandler {
         $sql = "CREATE TABLE $participants_table_name (
                     day tinyint(1) unsigned NOT NULL,
                     year smallint(4) unsigned NOT NULL,
-                    name tinytext NOT NULL,
+                    name varchar(40) NOT NULL,
                     email tinytext NOT NULL,
                     PRIMARY KEY  (day,year,name)
                 ) $charset_collate;";
