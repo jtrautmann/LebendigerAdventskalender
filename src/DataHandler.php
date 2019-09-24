@@ -6,14 +6,14 @@ class DataHandler {
     private $hosts_table_name;
     private $participants_table_name;
 
-    public function __construct($project_name) {
+    public function __construct() {
         global $wpdb;
 
-        $db_prefix = $wpdb->prefix . $project_name . "_";
+        $db_prefix = $wpdb->prefix . $this->project_name . "_";
         
         // set names of the tables
-        $hosts_table_name = $db_prefix . "hosts";
-        $participants_table_name = $db_prefix . "participants";
+        $this->hosts_table_name = $db_prefix . "hosts";
+        $this->participants_table_name = $db_prefix . "participants";
     }
 
     public function initializeDatabase() {
@@ -24,7 +24,7 @@ class DataHandler {
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');    // needed for dbDelta function
         
         // create hosts table
-        $sql = "CREATE TABLE $hosts_table_name (
+        $sql = "CREATE TABLE $this->hosts_table_name (
                     day tinyint(1) unsigned NOT NULL,
                     year smallint(4) unsigned NOT NULL, 
                     name tinytext NOT NULL,
@@ -43,7 +43,7 @@ class DataHandler {
           dbDelta($sql);
 
         // create participants table
-        $sql = "CREATE TABLE $participants_table_name (
+        $sql = "CREATE TABLE $this->participants_table_name (
                     day tinyint(1) unsigned NOT NULL,
                     year smallint(4) unsigned NOT NULL,
                     name varchar(40) NOT NULL,
