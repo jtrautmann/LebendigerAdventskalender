@@ -2,15 +2,18 @@
 
 class Controller {
 
-    $data_handler = DataHandler();
+    private $data_handler;
 
-    public function activate()
-    {
+    public function __construct() {
+        // instantiate data handler
+        $this->data_handler = new DataHandler();
+    }
+
+    public function activate() {
         $this->data_handler->initializeDatabase();
     }
 
-    public function deactivate()
-    {
+    public function deactivate() {
         $this->data_handler->deleteDatabase();
     }
 

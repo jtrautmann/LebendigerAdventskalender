@@ -1,6 +1,9 @@
 <?php
+// ---- constants ----
+// current page
+$LINK = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 // commands
-$COMMAND = "command"
+$COMMAND = "command";
 $ACTIVATE = 1;
 $DEACTIVATE = 2;
 
@@ -12,8 +15,7 @@ $controller = new Controller();
 
 <?php
 // check for POST variables
-if (isset($_POST[$COMMAND]))
-{
+if (isset($_POST[$COMMAND])) {
 	switch($_POST[$COMMAND]) {
         case $ACTIVATE:
             if (!$controller->isActiveCalendar()) {
@@ -37,7 +39,7 @@ if (isset($_POST[$COMMAND]))
 }
 ?>
 
-<form action=<?__FILE__?> method="post">
-  <label>Status: <?$controller->isActiveCalendar() ? echo "aktiv" : echo "inaktiv"?></label>
-  <button type="submit" name="<?$COMMAND?>" value="<?$controller->isActiveCalendar() ? $DEACTIVATE.">Stoppen" : $ACTIVATE.">Starten" ?></button>
+<form action=<? echo $LINK ?> method="post">
+  <label>Status: <? echo $controller->isActiveCalendar() ? "aktiv" : "inaktiv" ?></label>
+  <button type="submit" name="<? echo $COMMAND?>" value="<? echo $controller->isActiveCalendar() ? $DEACTIVATE.">Stoppen" : $ACTIVATE.">Starten" ?></button>
 </form>

@@ -13,7 +13,7 @@ $lebendiger_adventskalender = new LebendigerAdventskalender();
 
 class LebendigerAdventskalender {
 
-    private $controller = new Controller();
+    private $controller;
 
     public function __construct() {
         // add administrator tool to administrator menu
@@ -25,38 +25,34 @@ class LebendigerAdventskalender {
         // register plugin activation and deactivation hook 
         register_activation_hook( __FILE__, array($this, 'activate' ));
         register_deactivation_hook(__FILE__, array($this, 'deactivate'));
+
+        // instantiate controller
+        $this->controller = new Controller();
     }
 
-    public function activate()
-    {
+    public function activate() {
         $this->controller->activate();
     }
 
-    public function deactivate()
-    {
+    public function deactivate() {
         $this->controller->deactivate();
     }
 
-    public function addToMenu()
-    {
+    public function addToMenu() {
         add_menu_page('Lebendiger Adventskalender', 'Lebendiger Adventskalender', 'edit_posts', 'lebendiger_adventskalender', array($this, 'printAdminPage'));
     }
 
-    public function printAdminPage()
-    {
+    public function printAdminPage() {
         include(dirname(__FILE__).'/admin.php');
     }
 
-    public function autoload($class)
-    {
+    public function autoload($class) {
         $dir = "src";
 
-        if (file_exists(dirname(__FILE__)."/".$dir."/".$class.".php"))
-        {
+        if (file_exists(dirname(__FILE__)."/".$dir."/".$class.".php")) {
             require_once(dirname(__FILE__)."/".$dir."/".$class.".php");
         }
-        else
-        {
+        else {
             return false;
         }
     }
