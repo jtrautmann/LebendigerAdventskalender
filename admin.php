@@ -19,8 +19,13 @@ if (isset($_POST[$COMMAND])) {
 	switch($_POST[$COMMAND]) {
         case $ACTIVATE:
             if (!$controller->isActiveCalendar()) {
-                $controller->activateCalendar();
-                echo '<div class="notice notice-success"><p>Der Lebendige Adventskalender wurde aktiviert.</p></div>';
+                $result = $controller->activateCalendar();
+                if (is_wp_error($result)) {
+                    echo '<div class="notice notice-error"><p>Der Lebendige Adventskalender konnte nicht aktiviert werden. Fehler: '.$result->get_error_message().'</p></div>';
+                }
+                else {
+                    echo '<div class="notice notice-success"><p>Der Lebendige Adventskalender wurde aktiviert.</p></div>';
+                }
             }
             else {
                 echo '<div class="notice notice-error"><p>Der Lebendige Adventskalender ist bereits aktiv.</p></div>';
@@ -28,8 +33,12 @@ if (isset($_POST[$COMMAND])) {
             break;
         case $DEACTIVATE:
             if ($controller->isActiveCalendar()) {
-                $controller->deactivateCalendar();
-                echo '<div class="notice notice-success"><p>Der Lebendige Adventskalender wurde deaktiviert.</p></div>';
+                if ($controller->deactivateCalendar()) {
+                    echo '<div class="notice notice-success"><p>Der Lebendige Adventskalender wurde deaktiviert.</p></div>';
+                }
+                else {
+                    echo '<div class="notice notice-error"><p>Der Lebendige Adventskalender konnte nicht deaktiviert werden.</p></div>';
+                }
             }
             else {
                 echo '<div class="notice notice-error"><p>Der Lebendige Adventskalender ist bereits inaktiv.</p></div>';
@@ -39,7 +48,7 @@ if (isset($_POST[$COMMAND])) {
 }
 ?>
 
-<form action=<? echo $LINK ?> method="post">
+<form action="<? echo $LINK ?>" method="post">
   <div><label>Status: <? echo $controller->isActiveCalendar() ? "aktiv" : "inaktiv" ?></label></div>
   <div><button class="button button-primary" type="submit" name="<? echo $COMMAND?>" value="<? echo $controller->isActiveCalendar() ? $DEACTIVATE.'">Stoppen' : $ACTIVATE.'">Starten' ?></button></div>
 </form>

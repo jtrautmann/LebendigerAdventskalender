@@ -6,6 +6,7 @@ class DataHandler {
 
     private $db_version_option;
     private $calendar_active_option;
+    private $post_id_option;
 
     private $hosts_table_name;
     private $participants_table_name;
@@ -22,6 +23,7 @@ class DataHandler {
         // set option names
         $this->db_version_option = $this->PROJECT_NAME . "_db_version";
         $this->calendar_active_option = $this->PROJECT_NAME . "_calendar_active";
+        $this->post_id_option = $this->PROJECT_NAME . "_post_id";
     }
 
     public function initializeDatabase() {
@@ -84,12 +86,18 @@ class DataHandler {
         delete_option($this->calendar_active_option);
     }
 
-    public function setActiveCalendar() {
+    public function setActiveCalendar($post_id) {
+        add_option($this->post_id_option, $post_id);
         update_option($this->calendar_active_option, true);
     }
 
     public function setInactiveCalendar() {
+        delete_option($this->post_id_option);
         update_option($this->calendar_active_option, false);
+    }
+
+    public function getPostID() {
+        return get_option($this->post_id_option);
     }
 
     public function isActiveCalendar() {
