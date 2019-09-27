@@ -2,18 +2,26 @@
 
 class DataHandler {
 
-    private $project_name = "lebendigeradventskalender";
+    private $PROJECT_NAME = "lebendigeradventskalender";
+
+    private $db_version_option;
+    private $calendar_active_option;
+
     private $hosts_table_name;
     private $participants_table_name;
 
     public function __construct() {
         global $wpdb;
 
-        $db_prefix = $wpdb->prefix . $this->project_name . "_";
+        $db_prefix = $wpdb->prefix . $this->PROJECT_NAME . "_";
         
         // set names of the tables
         $this->hosts_table_name = $db_prefix . "hosts";
         $this->participants_table_name = $db_prefix . "participants";
+
+        // set option names
+        $this->db_version_option = $this->PROJECT_NAME . "_db_version";
+        $this->calendar_active_option = $this->PROJECT_NAME . "_calendar_active";
     }
 
     public function initializeDatabase() {
@@ -53,8 +61,12 @@ class DataHandler {
         
         dbDelta($sql);
 
+        // ---- add options ----
         // add version number for updates
-        add_option($this->project_name . "_db_version", "1.0" );
+        add_option($this->db_version_option, "1.0");
+
+        // add information whether the calendar is active
+        add_option($this->calendar_active_option, false);
     }
 
     public function deleteDatabase() {
@@ -67,8 +79,21 @@ class DataHandler {
         $sql = "DROP TABLE IF EXISTS $this->participants_table_name;";
         $wpdb->query($sql);
 
-        // delete version number
-        delete_option($this->project_name . "_db_version");
+        // delete options
+        delete_option($this->db_version_option);
+        delete_option($this->calendar_active_option);
+    }
+
+    public function setActiveCalendar() {
+        update_option($this->calendar_active_option, true);
+    }
+
+    public function setInactiveCalendar() {
+        update_option($this->calendar_active_option, false);
+    }
+
+    public function isActiveCalendar() {
+        return get_option($this->calendar_active_option);
     }
 
 }

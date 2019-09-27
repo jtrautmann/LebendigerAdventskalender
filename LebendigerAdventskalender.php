@@ -13,30 +13,28 @@ $lebendiger_adventskalender = new LebendigerAdventskalender();
 
 class LebendigerAdventskalender {
 
-    private $data_handler;
+    private $controller = new Controller();
 
     public function __construct() {
         // add administrator tool to administrator menu
         add_action('admin_menu', array($this, 'addToMenu'));
 
+        // add autoload function
         spl_autoload_register(array($this, 'autoload'));
 
         // register plugin activation and deactivation hook 
         register_activation_hook( __FILE__, array($this, 'activate' ));
         register_deactivation_hook(__FILE__, array($this, 'deactivate'));
-
-        // initialize properties
-        $this->data_handler = new DataHandler();
     }
 
     public function activate()
     {
-        $this->data_handler->initializeDatabase();
+        $this->controller->activate();
     }
 
     public function deactivate()
     {
-        $this->data_handler->deleteDatabase();
+        $this->controller->deactivate();
     }
 
     public function addToMenu()
