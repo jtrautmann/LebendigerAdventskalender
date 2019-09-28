@@ -23,8 +23,11 @@ class LebendigerAdventskalender {
         spl_autoload_register(array($this, 'autoload'));
 
         // register plugin activation and deactivation hook 
-        register_activation_hook( __FILE__, array($this, 'activate' ));
+        register_activation_hook( __FILE__, array($this, 'activate'));
         register_deactivation_hook(__FILE__, array($this, 'deactivate'));
+
+        // register plugin style
+        wp_register_style('lebendiger_adventskalender', plugin_dir_url(__FILE__).'/lebendiger_adventskalender.css');
 
         // instantiate controller
         $this->controller = new Controller();
