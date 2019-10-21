@@ -13,7 +13,7 @@ class PostManager {
         $post_arr = [
             'post_title'    => "Lebendiger Adventskalender",
             'post_content'  => "[$this->SHORTCODE]",
-            'post_status'   => "publish"
+            'post_status'   => "draft"
         ];
         $result = wp_insert_post($post_arr, true);
         return $result;
