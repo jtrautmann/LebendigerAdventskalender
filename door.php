@@ -48,7 +48,7 @@ if ($diffMillisec > 0)
 	<div class="top">
 		<div id="year"><? echo date("Y") ?></div>
 		<a href="<? echo get_current_url() ?>" title="Zurück zur Türchenübersicht"></a>
-		<img src="<? echo plugin_dir_url(__FILE__) ?>/pics/heading/<? echo $nr ?>.jpg" alt="Türchen <? echo $nr ?>"/>
+		<img src="<? echo plugin_dir_url(__FILE__) ?>pics/heading/<? echo $nr ?>.jpg" alt="Türchen <? echo $nr ?>"/>
 	</div>
 
 <?php

@@ -27,6 +27,6 @@ class PostManager {
     }
 
     public function printPost() {
-        include(plugin_dir_path(__FILE__).'/post.php');
+        include(dirname(plugin_dir_path(__FILE__)).'post.php');
     }
 }
