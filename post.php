@@ -13,7 +13,7 @@ if($nr<1 || $nr>24) {
 // ---- choose output ----
 if (!$nr) {
 	// show calendar
-	include(plugin_dir_url(__FILE__).'/calendar.php');
+	include(plugin_dir_path(__FILE__).'/calendar.php');
 	return;
 }
 
@@ -21,9 +21,9 @@ if (!$nr) {
 
 if (!$controller->hasHost($nr)) {
 	// show reservation
-	include(plugin_dir_url(__FILE__).'/reservation.php');
+	include(plugin_dir_path(__FILE__).'/reservation.php');
 	return;
 }
 
 // show door
-include(plugin_dir_url(__FILE__).'/door.php');
+include(plugin_dir_path(__FILE__).'/door.php');
