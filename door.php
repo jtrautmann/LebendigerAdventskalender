@@ -5,7 +5,7 @@ function echo_participant_formular($nr, $input=false, $name=NULL, $email=NULL, $
 	// TODO: create with DataHandler
 	echo '<div class="formular">
 <h3>Es sind noch Plätze frei!</h3>
-<form class="pure-form" action="'.get_current_url().'/?nr='.$nr.'" method="post">
+<form class="pure-form" action="'.add_param(get_current_url(), 'nr', $nr).'" method="post">
 <fieldset>
 <label for="name">Name</label>
 <input id="name" name="name" type="text" required';
@@ -47,7 +47,7 @@ if ($diffMillisec > 0)
 <div class="main">
 	<div class="top">
 		<div id="year"><? echo date("Y") ?></div>
-		<a href="<? echo get_current_url() ?>" title="Zurück zur Türchenübersicht"></a>
+		<a href="<? echo remove_param(get_current_url(), 'nr') ?>" title="Zurück zur Türchenübersicht"></a>
 		<img src="<? echo plugin_dir_url(__FILE__) ?>pics/heading/<? echo $nr ?>.jpg" alt="Türchen <? echo $nr ?>"/>
 	</div>
 

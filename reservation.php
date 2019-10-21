@@ -169,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD']=="POST") {
 
 <h3><? echo $WEEK_DAYS[$w] ?>, <?echo $nr ?></h3>
 <? echo $title ?>
-<form class="pure-form pure-form-aligned" action="<? echo get_current_url() ?>/?nr=<? echo $nr ?>" method="post">
+<form class="pure-form pure-form-aligned" action="<? echo add_param(get_current_url(), 'nr', $nr) ?>" method="post">
 <fieldset>
 	<div class="pure-control-group">
 		<label for="name">Gastgeber<?php echo $mandatory['name']; ?></label>

@@ -10,7 +10,7 @@ wp_enqueue_style('lebendiger_adventskalender_calendar');
 
 <?
 for ($i = 1; $i < 25; $i++)
-    echo '	<div id="t'.$i.'"><a href="'.get_current_url().'?nr='.$i.'"></a></div>';
+    echo '	<div id="t'.$i.'"><a href="'.add_param(get_current_url(), 'nr', $i).'"></a></div>';
 ?>
 
 </div><!-- imgMap -->
