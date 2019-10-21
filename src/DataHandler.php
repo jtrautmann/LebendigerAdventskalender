@@ -4,6 +4,8 @@ class DataHandler {
 
     private $PROJECT_NAME = "lebendigeradventskalender";
 
+    private $year;
+
     private $db_version_option;
     private $calendar_active_option;
     private $post_id_option;
@@ -13,6 +15,8 @@ class DataHandler {
 
     public function __construct() {
         global $wpdb;
+
+        $this->year = date("Y");
 
         $db_prefix = $wpdb->prefix . $this->PROJECT_NAME . "_";
         
@@ -39,7 +43,7 @@ class DataHandler {
                     year smallint(4) unsigned NOT NULL, 
                     name tinytext NOT NULL,
                     title tinytext NOT NULL,
-                    description text NOT NULL,
+                    description text,
                     address tinytext NOT NULL,
                     time tinytext NOT NULL,
                     registration bool DEFAULT '1' NOT NULL,
@@ -50,7 +54,7 @@ class DataHandler {
                     PRIMARY KEY  (day,year)
                 ) $charset_collate;";
           
-          dbDelta($sql);
+        dbDelta($sql);
 
         // create participants table
         $sql = "CREATE TABLE $this->participants_table_name (
@@ -102,6 +106,46 @@ class DataHandler {
 
     public function isActiveCalendar() {
         return get_option($this->calendar_active_option);
+    }
+
+    public function addHost($day, $data) {
+        global $wpdb;
+        $data['day'] = $day;
+        $data['year'] = $this->year;
+        $wpdb->insert($this->hosts_table_name, $data);
+        return $wpdb->insert_id !== false;
+    }
+
+    public function hasHost($day) {
+        global $wpdb;
+        $sql = "SELECT COUNT(1) FROM $this->hosts_table_name WHERE day = $day AND year = $this->year;";
+        return $wpdb->get_var($sql);
+    }
+
+    public function getHostInformation($day, $var) {
+        global $wpdb;
+        $sql = "SELECT $var FROM $this->hosts_table_name WHERE day = $day AND year = $this->year;";
+        return $wpdb->get_var($sql);
+    }
+
+    public function addParticipant($day, $data) {
+        global $wpdb;
+        $data['day'] = $day;
+        $data['year'] = $this->year;
+        $wpdb->insert($this->participants_table_name, $data);
+        return $wpdb->insert_id !== false;
+    }
+
+    public function getParticipantsNumber($day) {
+        global $wpdb;
+        $sql = "SELECT COUNT(*) FROM $this->participants_table_name WHERE day = $day AND year = $this->year;";
+        return $wpdb->get_var($sql);
+    }
+
+    public function getParticipantInformation($day, $index, $var) {
+        global $wpdb;
+        $sql = "SELECT $var FROM $this->participants_table_name WHERE day = $day AND year = $this->year;";
+        return $wpdb->get_var($sql, 0, $index);
     }
 
 }

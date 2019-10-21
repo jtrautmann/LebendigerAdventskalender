@@ -1,11 +1,29 @@
-<? wp_enqueue_style('lebendiger_adventskalender'); ?>
-
-<div id="imgMap">
-<div id="year"><?php date_default_timezone_set('Europe/Berlin'); echo date("Y"); ?></div>
 <?php
-for ($i = 1; $i < 25; $i++) {
-	echo '<div id="t'.$i.'"><a href="'.plugin_dir_url(__FILE__).'door.php?nr='.$i.'"></a></div>';
-	echo "\n";
+
+// ---- constants ----
+$WEEK_DAYS = array('Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag');
+
+// ---- initialize variables ----
+$controller = new Controller();
+$nr = filter_input(INPUT_GET,'nr',FILTER_SANITIZE_NUMBER_INT);
+if($nr<1 || $nr>24) {
+	$nr = NULL;
 }
-?>
-</div>
+
+// ---- choose output ----
+if (!$nr) {
+	// show calendar
+	include(plugin_dir_url(__FILE__).'/calendar.php');
+	return;
+}
+
+// TODO: door in the past
+
+if (!$controller->hasHost($nr)) {
+	// show reservation
+	include(plugin_dir_url(__FILE__).'/reservation.php');
+	return;
+}
+
+// show door
+include(plugin_dir_url(__FILE__).'/door.php');

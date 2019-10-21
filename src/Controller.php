@@ -16,6 +16,7 @@ class Controller {
     }
 
     public function deactivate() {
+        $this->deactivateCalendar();
         $this->data_handler->deleteDatabase();
     }
 
@@ -47,6 +48,30 @@ class Controller {
 
     public function isActiveCalendar() {
         return $this->data_handler->isActiveCalendar();
+    }
+
+    public function addHost($day, $data) {
+        return $this->data_handler->addHost($day, $data);
+    }
+
+    public function hasHost($day) {
+        return $this->data_handler->hasHost($day);
+    }
+
+    public function getHostInformation($day, $var) {
+        return $this->data_handler->getHostInformation($day, $var);
+    }
+
+    public function addParticipant($day, $data) {
+        return $this->data_handler->addParticipant($day, $data);
+    }
+
+    public function getParticipantsNumber($day) {
+        return $this->data_handler->getParticipantsNumber($day);
+    }
+
+    public function getParticipantInformation($day, $index, $var) {
+        return $this->data_handler->getParticipantInformation($day, $index, $var);
     }
 
 }

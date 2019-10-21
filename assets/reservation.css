@@ -1,0 +1,32 @@
+@import url("http://yui.yahooapis.com/pure/0.3.0/pure-min.css");
+
+input, textarea, .pure-button-primary {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+td {
+    font-size: 10pt;
+    width: 150px;
+    border: 1px solid #ccc;
+    vertical-align: top;
+}
+.b {
+    color: #0075e2;
+}
+.pure-control-group input, textarea, select, h3 {
+    width: 350px;
+}
+.error {
+    color: #f00;
+}
+.l {
+    font-weight: bold;
+    font-size: 14pt;
+}
+#info {
+    margin: 5px 0 5px 163px;
+    width: 328px;
+    padding: 5px 10px;
+    background-color: #ffc;
+    border: 1px solid #eee;
+    font-size: 10pt;
+}

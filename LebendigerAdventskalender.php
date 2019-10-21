@@ -22,12 +22,20 @@ class LebendigerAdventskalender {
         // add autoload function
         spl_autoload_register(array($this, 'autoload'));
 
+        // add functions collection
+        include(plugin_dir_url(__FILE__)."/src/functions.php");
+
         // register plugin activation and deactivation hook 
         register_activation_hook( __FILE__, array($this, 'activate'));
         register_deactivation_hook(__FILE__, array($this, 'deactivate'));
 
-        // register plugin style
-        wp_register_style('lebendiger_adventskalender', plugin_dir_url(__FILE__).'/lebendiger_adventskalender.css');
+        // register plugin styles
+        wp_register_style('lebendiger_adventskalender_calendar', plugin_dir_url(__FILE__).'/assets/calendar.css');
+        wp_register_style('lebendiger_adventskalender_door', plugin_dir_url(__FILE__).'/assets/door.css');
+        wp_register_style('lebendiger_adventskalender_reservation', plugin_dir_url(__FILE__).'/assets/reservation.css');
+
+        // register plugin scipts
+        wp_register_script('lebendiger_adventskalender_door', plugin_dir_url(__FILE__).'/assets/door.js');
 
         // instantiate controller
         $this->controller = new Controller();
@@ -46,14 +54,13 @@ class LebendigerAdventskalender {
     }
 
     public function printAdminPage() {
-        include(dirname(__FILE__).'/admin.php');
+        include(plugin_dir_url(__FILE__).'/admin.php');
     }
 
     public function autoload($class) {
-        $dir = "src";
-
-        if (file_exists(dirname(__FILE__)."/".$dir."/".$class.".php")) {
-            require_once(dirname(__FILE__)."/".$dir."/".$class.".php");
+        $path = plugin_dir_url(__FILE__).'/src/'.$class.'.php';
+        if (file_exists($path)) {
+            require_once($path);
         }
         else {
             return false;

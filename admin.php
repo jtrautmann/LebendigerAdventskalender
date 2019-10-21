@@ -1,22 +1,23 @@
 <?php
 // ---- constants ----
-// current page
-$LINK = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 // commands
-$COMMAND = "command";
+$COMMAND_STRING = "command";
 $ACTIVATE = 1;
 $DEACTIVATE = 2;
 
-// initialize variables
+// ---- initialize variables ----
 $controller = new Controller();
+
+// ---- output ----
 ?>
 
 <h1>Lebendiger Adventskalender Administration</h1>
 
 <?php
 // check for POST variables
-if (isset($_POST[$COMMAND])) {
-	switch($_POST[$COMMAND]) {
+$command = filter_input(INPUT_POST,$COMMAND_STRING,FILTER_SANITIZE_NUMBER_INT);
+if ($command) {
+	switch($command) {
         case $ACTIVATE:
             if (!$controller->isActiveCalendar()) {
                 $result = $controller->activateCalendar();
@@ -48,7 +49,7 @@ if (isset($_POST[$COMMAND])) {
 }
 ?>
 
-<form action="<? echo $LINK ?>" method="post">
+<form action="<? echo get_current_url() ?>" method="post">
   <div><label>Status: <? echo $controller->isActiveCalendar() ? "aktiv" : "inaktiv" ?></label></div>
-  <div><button class="button button-primary" type="submit" name="<? echo $COMMAND?>" value="<? echo $controller->isActiveCalendar() ? $DEACTIVATE.'">Stoppen' : $ACTIVATE.'">Starten' ?></button></div>
+  <div><button class="button button-primary" type="submit" name="<? echo $COMMAND_STRING?>" value="<? echo $controller->isActiveCalendar() ? $DEACTIVATE.'">Stoppen' : $ACTIVATE.'">Starten' ?></button></div>
 </form>
