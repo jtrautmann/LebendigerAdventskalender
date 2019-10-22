@@ -1,4 +1,4 @@
-<?
+<?php
 // ---- load style ----
 wp_enqueue_style('lebendiger_adventskalender_reservation');
 
@@ -167,9 +167,9 @@ if ($_SERVER['REQUEST_METHOD']=="POST") {
 <!-- END CODE FOR IMAGE UPLOAD -->
 
 
-<h3><? echo $WEEK_DAYS[$w] ?>, <?echo $nr ?></h3>
-<? echo $title ?>
-<form class="pure-form pure-form-aligned" action="<? echo add_param(get_current_url(), 'nr', $nr) ?>" method="post">
+<h3><?php echo $WEEK_DAYS[$w] ?>, <?php echo $nr ?></h3>
+<?php echo $title ?>
+<form class="pure-form pure-form-aligned" action="<?php echo add_param(get_current_url(), 'nr', $nr) ?>" method="post">
 <fieldset>
 	<div class="pure-control-group">
 		<label for="name">Gastgeber<?php echo $mandatory['name']; ?></label>
@@ -212,7 +212,7 @@ if ($_SERVER['REQUEST_METHOD']=="POST") {
 		<label style="margin-top: -5px;">Flyer / Bild<br/>zur Einstimmung</label>
 		<div style="display: inline-block;"><?php echo $image_upload ?></div>
 	</div>
-	<div class="pure-control-group"><label <? if ($mandatory_field_empty) echo 'class="error"'?>><span class="l">*</span> Pflichtfeld(er)</label></div>
+	<div class="pure-control-group"><label <?php if ($mandatory_field_empty) echo 'class="error"'?>><span class="l">*</span> Pflichtfeld(er)</label></div>
 	<div class="pure-controls">
 		<?php echo $buttons; ?>
 	</div>

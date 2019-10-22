@@ -49,7 +49,7 @@ if ($command) {
 }
 ?>
 
-<form action="<? echo get_current_url() ?>" method="post">
-  <div><label>Status: <? echo $controller->isActiveCalendar() ? "aktiv" : "inaktiv" ?></label></div>
-  <div><button class="button button-primary" type="submit" name="<? echo $COMMAND_STRING?>" value="<? echo $controller->isActiveCalendar() ? $DEACTIVATE.'">Stoppen' : $ACTIVATE.'">Starten' ?></button></div>
+<form action="<?php echo get_current_url() ?>" method="post">
+  <div><label>Status: <?php echo ($controller->isActiveCalendar() ? "aktiv" : "inaktiv") ?></label></div>
+  <div><button class="button button-primary" type="submit" name="<?php echo $COMMAND_STRING?>" value="<?php echo $controller->isActiveCalendar() ? $DEACTIVATE.'">Stoppen' : $ACTIVATE.'">Starten' ?></button></div>
 </form>
