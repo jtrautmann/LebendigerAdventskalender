@@ -40,8 +40,12 @@ wp_enqueue_script('lebendiger_adventskalender_door');
 
 // ---- output ----
 $diffMillisec = round((mktime(0,0,0,12,$nr,date('Y'))-microtime(true))*1000);
-if ($diffMillisec > 0)
-	echo '<script>onload="countdown('.$diffMillisec.')"</script>';
+$trigger_countdown = function() use ($diffMillisec) {
+	echo "<script>countdown($diffMillisec)</script>";
+};
+if ($diffMillisec > 0) {
+	add_action('wp_footer', $trigger_countdown,1000);
+}
 ?>
 
 <div class="main">

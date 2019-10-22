@@ -12,9 +12,9 @@ function linkTo_UnCryptMailto(s, shift)	{
 	location.href='mailto:' + UnCryptMailto(s, shift);
 }
 
-function countdown(millisec){
+function countdown(millisec) {
 	var timer;
-	timer = setInterval(function(){
+	timer = setInterval(function() {
 		millisec = millisec-31;
 		if(millisec == 0) {
 			clearTimeout(timer);
