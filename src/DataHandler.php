@@ -112,8 +112,8 @@ class DataHandler {
         global $wpdb;
         $data['day'] = $day;
         $data['year'] = $this->year;
-        $wpdb->insert($this->hosts_table_name, $data);
-        return $wpdb->insert_id !== false;
+        $result = $wpdb->insert($this->hosts_table_name, $data);
+        return $result !== false;
     }
 
     public function hasHost($day) {
