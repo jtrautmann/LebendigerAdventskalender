@@ -56,7 +56,7 @@ if ($diffMillisec > 0) {
 
 <?php
 if ($diffMillisec > 0) {
-	echo '<div class="misc"><b>Türchen Nr. '.$nr.' ist schon reserviert. Für die Anmeldung bist zu früh!</b><br/>Versuch\'s in <span id="timer">'.$diffMillisec.' ms</span> nochmal...</div>';
+	echo '<div class="misc"><b>Türchen Nr. '.$nr.' ist schon reserviert. Für die Anmeldung bist du zu früh!</b><br/>Versuch\'s in <span id="timer">'.$diffMillisec.' ms</span> nochmal...</div>';
 }
 else {
 	
