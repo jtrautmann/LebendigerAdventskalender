@@ -116,6 +116,13 @@ if ($_SERVER['REQUEST_METHOD']=="POST") {
 		mail($inputs['la_email'], $encoded_subject, $text, implode("\r\n",$headers));
 	}
 }
+
+// fill mandatory array for non-mandatory inputs
+foreach ($inputs as $key => $value) {
+	if (!isset($mandatory[$key])) {
+		$mandatory[$key] = '';
+	}
+}
 ?>
 
 <!-- START CODE FOR IMAGE UPLOAD -->
