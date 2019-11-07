@@ -33,7 +33,7 @@ class LebendigerAdventskalender {
         add_action('wp_loaded', array($this, 'addStylesAndScripts'));
 
         // instantiate controller
-        $this->controller = new Controller();
+        $this->controller = Controller::getController();
     }
 
     public function activate() {

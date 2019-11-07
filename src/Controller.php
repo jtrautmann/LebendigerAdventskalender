@@ -2,11 +2,20 @@
 
 class Controller {
 
+    private static $controller;
+
     private $data_handler;
     private $post_manager;
     private $input_handler;
     
-    public function __construct() {
+    public static function getController() : Controller {
+        if (!isset(self::$controller)) {
+            self::$controller = new Controller();
+        }
+        return self::$controller;
+    }
+
+    private function __construct() {
         // instantiate attributes
         $this->data_handler = new DataHandler();
         $this->post_manager = new PostManager();

@@ -86,6 +86,7 @@ if ($_SERVER['REQUEST_METHOD']=="POST") {
 			copy('img_tmp/'.$inputs['la_image'],'img/'.$inputs['la_image']);
 		else
 			$image_upload = '<input id="la_image" name="la_image" type="hidden" value=""/>';
+		// TODO: do generically
 		$data = [];
 		foreach ($inputs as $key => $value) {
 			// delete the "la_" prefix of the key
@@ -104,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD']=="POST") {
 		$subject = 'Dein SfC-Adventskalender-Türchen wurde eingetragen';
 		$encoded_subject = '=?utf-8?B?'.base64_encode($subject).'?=';
 		// TODO: add link to page to change the data and see the participants
-		$text = "Dein Adventskalender-Türchen am $WEEK_DAYS[$w], den $nr";
+		$text = "Dein Adventskalender-Türchen am ".WEEK_DAYS[$w].", den $nr";
 		$text .= ". Dezember wurde erfolgreich eingetragen!";
 		$headers = [];
 		$headers[] = "MIME-Version: 1.0";
@@ -191,7 +192,7 @@ foreach ($inputs as $key => $value) {
 <!-- END CODE FOR IMAGE UPLOAD -->
 
 
-<h3><?php echo $WEEK_DAYS[$w] ?>, den <?php echo $nr ?>. Dezember</h3>
+<h3><?php echo WEEK_DAYS[$w] ?>, den <?php echo $nr ?>. Dezember</h3>
 <?php echo $title ?>
 <form class="pure-form pure-form-aligned" action="<?php echo add_param(get_current_url(), 'nr', $nr) ?>" method="post">
 <fieldset>

@@ -7,8 +7,8 @@ function echo_participant_formular($nr, $input=false, $name=NULL, $email=NULL, $
 <h3>Es sind noch Plätze frei!</h3>
 <form class="pure-form" action="'.add_param(get_current_url(), 'nr', $nr).'" method="post">
 <fieldset>
-<label for="name">Name</label>
-<input id="name" name="name" type="text" required';
+<label for="la_name">Name</label>
+<input id="la_name" name="la_name" type="text" required';
 	if ($input) {
 		if(!$name)
 			echo ' class="f"';
@@ -16,8 +16,8 @@ function echo_participant_formular($nr, $input=false, $name=NULL, $email=NULL, $
 			echo ' value="'.$name.'"';
 	}
 	echo '>
-<label for="email">E-Mail (optional)</label>
-<input id="email" name="email" type="email"';
+<label for="la_email">E-Mail (optional)</label>
+<input id="la_email" name="la_email" type="email"';
 	if ($input) {
 		if(!$email)
 			echo '" class="f"';
@@ -64,7 +64,7 @@ else {
 	// output host information
 	echo '<div class="info">';
 	$w = date('w', mktime(0,0,0,12,$nr,date('Y')));
-	echo '<h3>'.$WEEK_DAYS[$w].', der '.$nr.'. Dezember</h3>';
+	echo '<h3>'.WEEK_DAYS[$w].', der '.$nr.'. Dezember</h3>';
 	echo '<div class="i">';
 	echo '<h2>'.$controller->getHostInformation($nr, 'title').'</h2>';
 	$description = $controller->getHostInformation($nr, 'description');
@@ -106,16 +106,23 @@ else {
 			if($_SERVER['REQUEST_METHOD']=="POST") {
 				// TODO: create with DataHandler
 				$args = array(
-					'name' => FILTER_SANITIZE_STRING,
-					'email' => FILTER_SANITIZE_EMAIL
+					'la_name' => FILTER_SANITIZE_STRING,
+					'la_email' => FILTER_SANITIZE_EMAIL
 				);
 				$inputs = filter_input_array(INPUT_POST, $args);
 
-				$valid_email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
-				if ($inputs['name'] && $inputs['email'] && $valid_email) {
+				$valid_email = filter_input(INPUT_POST, 'la_email', FILTER_VALIDATE_EMAIL);
+				if ($inputs['la_name'] && $inputs['la_email'] && $valid_email) {
 					// registration
 					// TODO: send email to participant and host
-					if ($controller->addParticipant($nr, $inputs))
+					// TODO: do generically
+					$data = [];
+					foreach ($inputs as $key => $value) {
+						// delete the "la_" prefix of the key
+						$new_key = substr($key, 3);
+						$data[$new_key] = $value;
+					}
+					if ($controller->addParticipant($nr, $data))
 						echo '<div class="formular" style="color: #0075e2;"><h3>Anmeldung erfolgreich</h3>Viel Spaß bei diesem Türchen!</div>';
 					else
 						echo '<div class="formular f"><h3>Anmeldung konnte nicht erfolgreich abgeschlossen werden</h3>Versuche es bitte erneut</div>';

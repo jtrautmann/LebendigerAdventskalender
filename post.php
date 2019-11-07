@@ -1,10 +1,9 @@
 <?php
-
 // ---- constants ----
-$WEEK_DAYS = array('Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag');
+const WEEK_DAYS = array('Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag');
 
 // ---- initialize variables ----
-$controller = new Controller();
+$controller = Controller::getController();
 $nr = $controller->getDoorNumberInput();
 
 // ---- choose output ----
@@ -25,4 +24,3 @@ switch ($controller->getShowState()) {
 		include(plugin_dir_path(__FILE__).'door.php');
 		break;
 }
-

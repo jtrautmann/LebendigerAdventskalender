@@ -2,17 +2,17 @@
 
 class PostManager {
 
-    private $SHORTCODE = "lebendiger_adventskalender";
+    private const SHORTCODE = "lebendiger_adventskalender";
 
     public function __construct() {
         // register shortcode
-        add_shortcode($this->SHORTCODE, [$this,'printPost']);
+        add_shortcode(self::SHORTCODE, [$this,'printPost']);
     }
 
     public function createPost() {
         $post_arr = [
             'post_title'    => "Lebendiger Adventskalender",
-            'post_content'  => "[$this->SHORTCODE]",
+            'post_content'  => "[".self::SHORTCODE."]",
             'post_status'   => "draft"
         ];
         $result = wp_insert_post($post_arr, true);
