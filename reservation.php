@@ -3,26 +3,19 @@
 wp_enqueue_style('lebendiger_adventskalender_reservation');
 
 // ---- initialize variables ----
-// TODO: create with DataHandler
-$inputs = [
-	'la_title' => '',
-	'la_description' => '',
-	'la_address' => '',
-	'la_time' => '',
-	'la_max_participants' => '',
-	'la_registration' => true,
-	'la_name' => '',
-	'la_email' => '',
-	'la_phonenumber' => ''
-];
+$input = $controller->getReservationInput();
+$input_data = $input->getData();
 
-$mandatory = [
-	'la_name' => '*',
-	'la_title' => '*',
-	'la_address' => '*',
-	'la_time' => '*',
-	'la_email' => '*'
-];
+$mandatory_fields = $controller->getReservationMandatoryInput();
+$mandatory = [];
+foreach ($input_data as $key => $value) {
+	if (in_array($mandatory_fields,$key)) {
+		$mandatory[$key] = '*';
+	}
+	else {
+		$mandatory[$key] = '';
+	}
+}
 
 $mandatory_field_empty = false;
 $emailerror = '';
@@ -35,77 +28,45 @@ $title = '<div class="info">Türchen Nr. '.$nr.' ist noch frei. Reserviere hier 
 $buttons = '<button type="submit" class="pure-button pure-button-primary">absenden</button>';
 $image_upload = '<div id="fine-uploader"></div><input id="la_image" name="la_image" type="hidden" value=""/>';
 
-if ($_SERVER['REQUEST_METHOD']=="POST") {
-	$args = [
-	    'la_title' => FILTER_SANITIZE_STRING,
-	    'la_description' => FILTER_SANITIZE_STRING,
-	    'la_address' => FILTER_SANITIZE_STRING,
-	    'la_time' => FILTER_SANITIZE_STRING,
-	    'la_max_participants' => FILTER_SANITIZE_NUMBER_INT,
-	    'la_name' => FILTER_SANITIZE_STRING,
-	    'la_email' => FILTER_SANITIZE_EMAIL,
-	    'la_phonenumber' => FILTER_SANITIZE_STRING,
-	    'la_image' => FILTER_SANITIZE_STRING
-	];
-	$inputs = filter_input_array(INPUT_POST, $args);
-
-	$inputs['la_registration'] = isset($_POST['la_registration']) ? true : false;
-	
-	if ($inputs['la_max_participants']) {
-		if(strpos($inputs['la_max_participants'],'-')) {
-			$expl = explode('-',$inputs['la_max_participants']);
-			$inputs['la_max_participants'] = end($expl);
+if ($input->inputReceived()) {
+	if ($input->hasError()) {
+		$error = $input->getError();
+		if (in_array(InputErrorType::INVALID_EMAIL,$error->get_error_codes())) {
+			$emailerror = '<div class="error" style="margin-left: 10px; font-size: 11pt; text-align: center;">keine gültige E-Mail-Adresse!</div>';
 		}
-		$inputs['la_max_participants'] = intval($inputs['la_max_participants']);
-	}
-	
-	$valid_email = filter_input(INPUT_POST, 'la_email', FILTER_VALIDATE_EMAIL);
-	if ($inputs['la_email'] && !$valid_email)
-		$emailerror = '<div class="error" style="margin-left: 10px; font-size: 11pt; text-align: center;">keine gültige E-Mail-Adresse!</div>';
-
-	if ($inputs['la_image'])
-		$image_upload = '<img id="image_preview" src="img_tmp/'.$inputs['la_image'].'" alt="Bild" style="max-width: 350px; max-height: 350px;"/> <div id="fine-uploader"></div><input id="la_image" name="la_image" type="hidden" value="'.$inputs['la_image'].'"/>';
-
-	foreach ($mandatory as $key => $value) {
-		if (!$inputs[$key]) {
-			$mandatory[$key] = '<span class="error l">*</span>';
+		if (in_array(InputErrorType::MANDATORY_MISSING,$error->get_error_codes())) {
 			$mandatory_field_empty = true;
+			foreach ($error->get_error_data() as $value) {
+				$mandatory[$value] = '<span class="error l">*</span>';
+			}
 		}
 	}
+
+	if ($input_data['image'])
+		$image_upload = '<img id="image_preview" src="img_tmp/'.$input_data['image'].'" alt="Bild" style="max-width: 350px; max-height: 350px;"/> <div id="fine-uploader"></div><input id="la_image" name="la_image" type="hidden" value="'.$input_data['image'].'"/>';
+	
 	if (!$mandatory_field_empty && !$emailerror && !isset($_POST['correct'])) {
 		$readonly = ' readonly';
 		$buttons = '<div class="b" style="margin-bottom: 10px;">Sind die Eingaben korrekt übernommen worden?</div><button type="submit" class="pure-button pure-button-primary" name="correct">korrigieren</button><button type="submit" class="pure-button pure-button-primary" style="margin-left: 10px;" name="confirm">alles korrekt, absenden</button>';
-		if($inputs['la_image'])
-			$image_upload = '<img id="image_preview" src="img_tmp/'.$inputs['la_image'].'" alt="Bild" style="max-width: 350px; max-height: 350px;"/><input id="la_image" name="la_image" type="hidden" value="'.$inputs['la_image'].'"/>';
+		if($input_data['image'])
+			$image_upload = '<img id="image_preview" src="img_tmp/'.$input_data['image'].'" alt="Bild" style="max-width: 350px; max-height: 350px;"/><input id="la_image" name="la_image" type="hidden" value="'.$input_data['image'].'"/>';
 		else
 			$image_upload = '<input id="la_image" name="la_image" type="hidden" value=""/>';
 	}
+	
 	if (isset($_POST['confirm'])) {
 		$buttons = '';
-		if ($inputs['la_image'])
-			copy('img_tmp/'.$inputs['la_image'],'img/'.$inputs['la_image']);
+		if ($input_data['image'])
+			copy('img_tmp/'.$input_data['image'],'img/'.$input_data['image']);
 		else
 			$image_upload = '<input id="la_image" name="la_image" type="hidden" value=""/>';
-		// TODO: do generically
-		$data = [];
-		foreach ($inputs as $key => $value) {
-			// delete the "la_" prefix of the key
-			$new_key = substr($key, 3);
-			$data[$new_key] = $value;
-		}
-		if ($controller->addHost($nr, $data)) {
+		
+		if ($controller->addHost($nr, $input_data)) {
 			$title = '<div class="b">Dein Adventskalender-Türchen wurde hinzugefügt! Cool, dass du mitmachst!</div>';
 		}
 		else {
 			$title = '<div class="error">Dein Adventskalender-Türchen konnte leider nicht hinzugefügt werden! Versuche es bitte erneut!</div>';
 		}
-	}
-}
-
-// fill mandatory array for non-mandatory inputs
-foreach ($inputs as $key => $value) {
-	if (!isset($mandatory[$key])) {
-		$mandatory[$key] = '';
 	}
 }
 ?>
@@ -181,41 +142,41 @@ foreach ($inputs as $key => $value) {
 <form class="pure-form pure-form-aligned" action="<?php echo add_param(get_current_url(), 'nr', $nr) ?>" method="post">
 <fieldset>
 	<div class="pure-control-group">
-		<label for="la_name">Gastgeber<?php echo $mandatory['la_name']; ?></label>
-		<input id="la_name" name="la_name" type="text" value="<?php echo $inputs['la_name']; ?>" placeholder="Dein Name / eure Namen"<?php echo $readonly; ?>/>
+		<label for="la_name">Gastgeber<?php echo $mandatory['name']; ?></label>
+		<input name="la_name" type="text" value="<?php echo $input_data['name']; ?>" placeholder="Dein Name / eure Namen"<?php echo $readonly; ?>/>
 	</div>
 	<div class="pure-control-group">
-		<label for="title">Aktion<?php echo $mandatory['la_title']; ?></label>
-		<input id="la_title" name="la_title" type="text" value="<?php echo $inputs['la_title']; ?>" placeholder="Kurzer Titel des Adventskalender-Türchens"<?php echo $readonly; ?>/>
+		<label for="title">Aktion<?php echo $mandatory['title']; ?></label>
+		<input name="la_title" type="text" value="<?php echo $input_data['title']; ?>" placeholder="Kurzer Titel des Adventskalender-Türchens"<?php echo $readonly; ?>/>
 	</div>
 	<div class="pure-control-group">
-		<label for="la_description">Beschreibung<?php echo $mandatory['la_description']; ?></label>
-		<textarea rows="8" id="la_description" name="la_description" placeholder="Etwas ausführlichere Beschreibung der Aktion"<?php echo $readonly; ?>><?php echo $inputs['la_description']; ?></textarea>
+		<label for="la_description">Beschreibung<?php echo $mandatory['description']; ?></label>
+		<textarea rows="8" name="la_description" placeholder="Etwas ausführlichere Beschreibung der Aktion"<?php echo $readonly; ?>><?php echo $input_data['description']; ?></textarea>
 	</div>
 	<div class="pure-control-group">
-		<label for="la_address">Adresse<?php echo $mandatory['la_address']; ?></label>
-		<input id="la_address" name="la_address" type="text" value="<?php echo $inputs['la_address']; ?>" placeholder="Wo macht das Türchen auf?"<?php echo $readonly; ?>/>
+		<label for="la_address">Adresse<?php echo $mandatory['address']; ?></label>
+		<input name="la_address" type="text" value="<?php echo $input_data['address']; ?>" placeholder="Wo macht das Türchen auf?"<?php echo $readonly; ?>/>
 	</div>
 	<div class="pure-control-group">
-		<label for="la_time">Uhrzeit<?php echo $mandatory['la_time']; ?></label>
-		<input id="la_time" name="la_time" type="text" value="<?php echo $inputs['la_time']; ?>" placeholder="Ab wann?"<?php echo $readonly; ?>/>
+		<label for="la_time">Uhrzeit<?php echo $mandatory['time']; ?></label>
+		<input name="la_time" type="text" value="<?php echo $input_data['time']; ?>" placeholder="Ab wann?"<?php echo $readonly; ?>/>
 	</div>
 	<div style="margin: 10px 0 0 165px; font-size: 11pt;">
 	<label for="la_registration" class="pure-checkbox">
-		<input id="la_registration" name="la_registration" type="checkbox" onclick="javascript:$('la_max_participants').disabled = !$('la_max_participants').disabled;"<?php if($inputs['la_registration']) echo ' checked'; ?>> Anmeldung erforderlich oder zumindest erwünscht
+		<input name="la_registration" type="checkbox" onclick="javascript:$('la_max_participants').disabled = !$('la_max_participants').disabled;"<?php if($input_data['registration']) echo ' checked'; ?>> Anmeldung erforderlich oder zumindest erwünscht
 	</label>
 	</div>
 	<div class="pure-control-group">
-		<label for="la_max_participants">max. Teilnehmer<?php echo $mandatory['la_max_participants']; ?></label>
-		<input id="la_max_participants" name="la_max_participants" type="text" value="<?php echo $inputs['la_max_participants']; ?>" placeholder="Wie viele Leute dürfen kommen?"<?php echo $readonly; if(!$inputs['la_registration']) echo ' disabled'; ?>/>
+		<label for="la_max_participants">max. Teilnehmer<?php echo $mandatory['max_participants']; ?></label>
+		<input id="la_max_participants" name="la_max_participants" type="text" value="<?php echo $input_data['max_participants']; ?>" placeholder="Wie viele Leute dürfen kommen?"<?php echo $readonly; if(!$input_data['registration']) echo ' disabled'; ?>/>
 	</div>
 	<div class="pure-control-group">
-		<label for="la_email">E-Mail<?php echo $mandatory['la_email']; ?></label>
-		<input id="la_email" name="la_email" type="text" value="<?php echo $inputs['la_email']; ?>" placeholder="Deine E-Mail-Adresse"<?php echo $readonly; ?>/><?php echo $emailerror; ?>
+		<label for="la_email">E-Mail<?php echo $mandatory['email']; ?></label>
+		<input name="la_email" type="text" value="<?php echo $input_data['email']; ?>" placeholder="Deine E-Mail-Adresse"<?php echo $readonly; ?>/><?php echo $emailerror; ?>
 	</div>
 	<div class="pure-control-group">
 		<label for="la_phonenumber">Telefonnummer</label>
-		<input id="la_phonenumber" name="la_phonenumber" type="text" value="<?php echo $inputs['la_phonenumber']; ?>" placeholder="Deine Telefonnummer (erscheint auf der Website!)"<?php echo $readonly; ?>/>
+		<input name="la_phonenumber" type="text" value="<?php echo $input_data['phonenumber']; ?>" placeholder="Deine Telefonnummer (erscheint auf der Website!)"<?php echo $readonly; ?>/>
 	</div>
 	<div class="pure-control-group">
 		<label style="margin-top: -5px;">Flyer / Bild<br/>zur Einstimmung</label>

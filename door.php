@@ -2,7 +2,7 @@
 
 // ---- functions ----
 function echo_participant_formular($nr, $input=false, $name=NULL, $email=NULL, $valid_email=false) {
-	// TODO: create with DataHandler
+	// TODO: create with Controller
 	echo '<div class="formular">
 <h3>Es sind noch Plätze frei!</h3>
 <form class="pure-form" action="'.add_param(get_current_url(), 'nr', $nr).'" method="post">
@@ -34,9 +34,8 @@ function echo_participant_formular($nr, $input=false, $name=NULL, $email=NULL, $
 </div>';
 }
 
-// ---- load style and script ----
+// ---- load style ----
 wp_enqueue_style('lebendiger_adventskalender_door');
-wp_enqueue_script('lebendiger_adventskalender_door');
 
 // ---- output ----
 $diffMillisec = round((mktime(0,0,0,12,$nr,date('Y'))-microtime(true))*1000);
@@ -104,7 +103,7 @@ else {
 		if(!$max_participants || $num_participants < $max_participants) {
 			// registration still possible
 			if($_SERVER['REQUEST_METHOD']=="POST") {
-				// TODO: create with DataHandler
+				// TODO: create with Controller
 				$args = array(
 					'la_name' => FILTER_SANITIZE_STRING,
 					'la_email' => FILTER_SANITIZE_EMAIL
@@ -114,7 +113,7 @@ else {
 				$valid_email = filter_input(INPUT_POST, 'la_email', FILTER_VALIDATE_EMAIL);
 				if ($inputs['la_name'] && $inputs['la_email'] && $valid_email) {
 					// registration
-					// TODO: do generically
+					// TODO: use InputHandler
 					$data = [];
 					foreach ($inputs as $key => $value) {
 						// delete the "la_" prefix of the key

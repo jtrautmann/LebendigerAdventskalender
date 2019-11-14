@@ -53,20 +53,22 @@ class LebendigerAdventskalender {
     }
 
     public function addStylesAndScripts() {
-        // enqueue plugin styles and scripts
+        // register plugin styles and enqueue plugin scripts
+        wp_register_style('lebendiger_adventskalender_admin',
+                            plugin_dir_url(__FILE__).'assets/admin.css');
         switch ($this->controller->getShowState()) {
             case ShowState::CALENDAR:
-                wp_enqueue_style('lebendiger_adventskalender_calendar',
+                wp_register_style('lebendiger_adventskalender_calendar',
                                     plugin_dir_url(__FILE__).'assets/calendar.css');
                 break;
             case ShowState::DOOR:
-                wp_enqueue_style('lebendiger_adventskalender_door',
+                wp_register_style('lebendiger_adventskalender_door',
                                     plugin_dir_url(__FILE__).'assets/door.css');
                 wp_enqueue_script('lebendiger_adventskalender_door',
                                     plugin_dir_url(__FILE__).'assets/door.js');
                 break;
             case ShowState::RESERVATION:
-                wp_enqueue_style('lebendiger_adventskalender_reservation',
+                wp_register_style('lebendiger_adventskalender_reservation',
                                     plugin_dir_url(__FILE__).'assets/reservation.css');
                 break;
         }

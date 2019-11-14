@@ -7,6 +7,7 @@ class Controller {
     private $data_handler;
     private $post_handler;
     private $input_handler;
+    private $output_handler;
     private $mail_handler;
     
     public static function getController() : Controller {
@@ -21,6 +22,7 @@ class Controller {
         $this->data_handler = new DataHandler();
         $this->post_handler = new PostHandler();
         $this->input_handler = new InputHandler();
+        $this->output_handler = new OutputHandler();
         // TODO: make mail address of sender configurable
         $this->mail_handler = new MailHandler('bl-prweb@sfc-karlsruhe.de');
     }
@@ -89,11 +91,62 @@ class Controller {
         }
 
         // send confirmation mail to host
-        $subject = 'Dein SfC-Adventskalender-Türchen wurde eingetragen';
+        $subject = "Dein SfC-Adventskalender-Türchen wurde eingetragen";
         // TODO: add link to page to change the data and see the participants
         $text = "Dein Adventskalender-Türchen am $day. Dezember";
-        $text .= " wurde erfolgreich eingetragen!";
+        $text .= " wurde erfolgreich eingetragen!\n";
+        $text .= "Hier alle Daten im Überblick:\n";
+        $text .= $this->getHostInformationOutput($day);
         $this->mail_handler->sendMail($data['email'], $subject, $text);
+
+        return true;
+    }
+
+    public function updateHost($day, $data) {
+        $email = $this->getHostInformation($day, 'email');
+
+        if (!$this->data_handler->updateHost($day, $data)) {
+            return false;
+        }
+
+        if ($data['email'] && $email != $data['email']) {
+            // send mail to old email
+            $subject = "Dein SfC-Adventskalender-Türchen wurde bearbeitet";
+            $text = "Dein Adventskalender-Türchen am $day. Dezember";
+            $text .= " wurde bearbeitet: Deine Mail-Adresse wurde auf ";
+            $text .= $data['email']." gesetzt.";
+            $this->mail_handler->sendMail($email, $subject, $text);
+            
+            $email = $data['email'];
+        }
+
+        // send mail to host
+        $subject = "Dein SfC-Adventskalender-Türchen wurde bearbeitet";
+        $text = "Dein Adventskalender-Türchen am $day. Dezember";
+        $text .= " wurde bearbeitet!\n";
+        $text .= "Hier alle Daten im Überblick:\n";
+        $text .= $this->getHostInformationOutput($day);
+        $this->mail_handler->sendMail($email, $subject, $text);
+
+        return true;
+    }
+
+    public function deleteHost($day) {
+        if (!$this->hasHost($day)) {
+            return false;
+        }
+
+        $email = $this->getHostInformation($day, 'email');
+
+        if (!$this->data_handler->deleteHost($day)) {
+            return false;
+        }
+
+        // send mail to host
+        $subject = "Dein SfC-Adventskalender-Türchen wurde gelöscht";
+        $text = "Dein Adventskalender-Türchen am $day. Dezember";
+        $text .= " wurde gelöscht!";
+        $this->mail_handler->sendMail($email, $subject, $text);
 
         return true;
     }
@@ -104,6 +157,14 @@ class Controller {
 
     public function getHostInformation($day, $var) {
         return $this->data_handler->getHostInformation($day, $var);
+    }
+
+    public function getHostVariables() {
+        return $this->data_handler->getHostVariables();
+    }
+
+    public function getHostOutput($key) {
+        return $this->output_handler->getHostOutput($key);
     }
 
     public function addParticipant($day, $data) {
@@ -121,7 +182,7 @@ class Controller {
         $subject = 'Anmeldung zu deinem SfC-Adventskalender-Türchen';
         $text = "Zu deinem Adventskalender-Türchen von heute, den $day.";
         $text .= " Dezember hat sich jemand angemeldet:\n";
-        // TODO: do generically
+        // TODO: use DataHandler and OutputHandler
         $text .= "Name: ".$data['name']."\n";
         $text .= "E-Mail: ".$data['email'];
         $this->mail_handler->sendMail($this->getHostInformation($day, 'email'), $subject, $text);
@@ -139,6 +200,34 @@ class Controller {
 
     public function getDoorNumberInput() {
         return $this->input_handler->getDoorNumber();
+    }
+
+    public function getReservationMandatoryInput() {
+        // TODO: use DataHandler
+        return InputHandler::RESERVATION_MANDATORY;
+    }
+
+    public function getReservationInput() : InputData {
+        return $this->input_handler->getReservationInput();
+    }
+
+    private function getHostInformationOutput($day) {
+        $text = "";
+        foreach ($this->getHostVariables() as $var) {
+            $text .= $this->getHostOutput($var).": ";
+            $val = $this->getHostInformation($day,$var);
+            if (!isset($val)) {
+                $text .= "keine Angabe";
+            }
+            else if (is_bool($val)) {
+                $text .= $val ? "ja" : "nein";
+            }
+            else {
+                $text .= $val;
+            }
+            $text .= "\n";
+        }
+        return $text;
     }
 
 }
