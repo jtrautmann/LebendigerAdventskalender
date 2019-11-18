@@ -9,7 +9,7 @@ $input_data = $input->getData();
 $mandatory_fields = $controller->getReservationMandatoryInput();
 $mandatory = [];
 foreach ($input_data as $key => $value) {
-	if (in_array($mandatory_fields,$key)) {
+	if (in_array($key,$mandatory_fields)) {
 		$mandatory[$key] = '*';
 	}
 	else {
@@ -72,8 +72,8 @@ if ($input->inputReceived()) {
 ?>
 
 <!-- START CODE FOR IMAGE UPLOAD -->
-<link href="fineuploader/fineuploader.css" rel="stylesheet">
-<script src="fineuploader/fineuploader.js"></script>
+<link href="<?php echo plugin_dir_url(__FILE__) ?>fineuploader/fineuploader.css" rel="stylesheet">
+<script src="<?php echo plugin_dir_url(__FILE__) ?>fineuploader/fineuploader.js"></script>
 <script type="text/template" id="qq-template">
 	<div class="qq-uploader-selector qq-uploader">
 		<ul class="qq-upload-list-selector qq-upload-list">

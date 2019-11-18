@@ -13,7 +13,7 @@ class OutputHandler {
         'max_participants' => 'max. Teilnehmer',
         'email' => 'E-Mail',
         'phonenumber' => 'Telefonnummer',
-        'image' => 'Flyer / Bild<br/>zur Einstimmung'
+        'image' => 'Flyer / Bild zur Einstimmung'
     ];
 
     public function __construct() {

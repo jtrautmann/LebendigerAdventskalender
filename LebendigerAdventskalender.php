@@ -70,6 +70,7 @@ class LebendigerAdventskalender {
             case ShowState::RESERVATION:
                 wp_register_style('lebendiger_adventskalender_reservation',
                                     plugin_dir_url(__FILE__).'assets/reservation.css');
+                wp_enqueue_script('jquery');
                 break;
         }
 
