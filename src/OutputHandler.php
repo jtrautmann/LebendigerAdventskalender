@@ -3,7 +3,7 @@
 class OutputHandler {
 
     // TODO: write into file
-    private const HOST_OUTPUT = [
+    const HOST_OUTPUT = [
         'name' => 'Gastgeber',
         'title' => 'Aktion',
         'description' => 'Beschreibung',

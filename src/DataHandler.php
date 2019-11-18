@@ -3,22 +3,22 @@
 class DataHandler {
 
     // value types
-    public const VALUE_TYPE_TINY_TEXT = 1;
-    public const VALUE_TYPE_TEXT      = 2;
-    public const VALUE_TYPE_EMAIL     = 3;
-    public const VALUE_TYPE_BOOLEAN   = 4;
-    public const VALUE_TYPE_INT       = 6;
-    public const VALUE_TYPE_TINY_INT  = 7;
+    const VALUE_TYPE_TINY_TEXT = 1;
+    const VALUE_TYPE_TEXT      = 2;
+    const VALUE_TYPE_EMAIL     = 3;
+    const VALUE_TYPE_BOOLEAN   = 4;
+    const VALUE_TYPE_INT       = 6;
+    const VALUE_TYPE_TINY_INT  = 7;
 
-    private const PROJECT_NAME = "lebendigeradventskalender";
+    const PROJECT_NAME = "lebendigeradventskalender";
 
     // option names
-    private const DB_VERSION_OPTION      = self::PROJECT_NAME . "_db_version";
-    private const CALENDAR_ACTIVE_OPTION = self::PROJECT_NAME . "_calendar_active";
-    private const HOST_VARS_OPTION       = self::PROJECT_NAME . "_host_vars";
-    private const POST_ID_OPTION         = self::PROJECT_NAME . "_post_id";
+    const DB_VERSION_OPTION      = self::PROJECT_NAME . "_db_version";
+    const CALENDAR_ACTIVE_OPTION = self::PROJECT_NAME . "_calendar_active";
+    const HOST_VARS_OPTION       = self::PROJECT_NAME . "_host_vars";
+    const POST_ID_OPTION         = self::PROJECT_NAME . "_post_id";
 
-    private const DEFAULT_HOST_VARS = [
+    const DEFAULT_HOST_VARS = [
         'name'             => self::VALUE_TYPE_TINY_TEXT,
         'title'            => self::VALUE_TYPE_TINY_TEXT,
         'description'      => self::VALUE_TYPE_TEXT,

@@ -5,14 +5,14 @@ class InputHandler {
     private $nr;
 
     // TODO: get from DataHandler
-    public const RESERVATION_MANDATORY = [
+    const RESERVATION_MANDATORY = [
         'name',
         'title',
         'address',
         'time',
         'email'
     ];
-    private const RESERVATION_FILTER = [
+    const RESERVATION_FILTER = [
         'la_title' => FILTER_SANITIZE_STRING,
         'la_description' => FILTER_SANITIZE_STRING,
         'la_address' => FILTER_SANITIZE_STRING,

@@ -2,7 +2,7 @@
 
 class PostHandler {
 
-    private const SHORTCODE = "lebendiger_adventskalender";
+    const SHORTCODE = "lebendiger_adventskalender";
 
     public function __construct() {
         // register shortcode
