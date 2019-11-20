@@ -51,8 +51,9 @@ class Controller {
     }
 
     public function deactivate() {
-        $this->deactivateCalendar();
-        $this->data_handler->deleteDatabase();
+        // TODO: uncomment when upgrading per SFTP or other is possible
+        // $this->deactivateCalendar();
+        // $this->data_handler->deleteDatabase();
     }
 
     public function activateCalendar() {

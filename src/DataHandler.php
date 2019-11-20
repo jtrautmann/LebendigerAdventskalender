@@ -51,6 +51,13 @@ class DataHandler {
     }
 
     public function initializeDatabase() {
+        // check whether database was already initialized
+        // TODO: remove when upgrading per SFTP or other is possible
+        $db_version = get_option(self::DB_VERSION_OPTION);
+        if (isset($db_version)) {
+            return;
+        }
+
         global $wpdb;
 
         // ---- create tables ----
