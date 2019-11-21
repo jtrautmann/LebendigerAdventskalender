@@ -56,6 +56,8 @@ class LebendigerAdventskalender {
         // register plugin styles and enqueue plugin scripts
         wp_register_style('lebendiger_adventskalender_admin',
                             plugin_dir_url(__FILE__).'assets/admin.css');
+        wp_enqueue_script('lebendiger_adventskalender_functions',
+                            plugin_dir_url(__FILE__).'assets/functions.js');
         switch ($this->controller->getShowState()) {
             case ShowState::CALENDAR:
                 wp_register_style('lebendiger_adventskalender_calendar',
