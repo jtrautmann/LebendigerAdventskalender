@@ -114,7 +114,7 @@ if ($input->inputReceived()) {
 		var uploader = new qq.FineUploader({
 			element: $('fine-uploader'),
 			request: {
-				endpoint: 'fineuploader/endpoint.php'
+				endpoint: '<?php echo plugin_dir_url(__FILE__) ?>fineuploader/endpoint.php'
 			},
 			multiple: false,
 			validation: {
