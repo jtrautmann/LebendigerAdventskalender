@@ -54,7 +54,7 @@ class DataHandler {
         // check whether database was already initialized
         // TODO: remove when upgrading per SFTP or other is possible
         $db_version = get_option(self::DB_VERSION_OPTION);
-        if (isset($db_version)) {
+        if ($db_version) {
             return;
         }
 
@@ -108,7 +108,7 @@ class DataHandler {
 
     private function updateDatabase() {
         $db_version = get_option(self::DB_VERSION_OPTION);
-        if (isset($db_version)) {
+        if ($db_version) {
             // update from 1.0 to 1.1
             if ($db_version == "1.0") {
                 add_option(self::HOST_VARS_OPTION, self::DEFAULT_HOST_VARS);
