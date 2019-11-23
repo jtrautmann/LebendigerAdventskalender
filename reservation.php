@@ -43,13 +43,13 @@ if ($input->inputReceived()) {
 	}
 
 	if ($input_data['image'])
-		$image_upload = '<img id="image_preview" src="img_tmp/'.$input_data['image'].'" alt="Bild" style="max-width: 350px; max-height: 350px;"/> <div id="fine-uploader"></div><input id="la_image" name="la_image" type="hidden" value="'.$input_data['image'].'"/>';
+		$image_upload = '<img id="image_preview" src="'.plugin_dir_url(__FILE__).'img_tmp/'.$input_data['image'].'" alt="Bild" style="max-width: 350px; max-height: 350px;"/> <div id="fine-uploader"></div><input id="la_image" name="la_image" type="hidden" value="'.$input_data['image'].'"/>';
 	
 	if (!$mandatory_field_empty && !$emailerror && !isset($_POST['correct'])) {
 		$readonly = ' readonly';
 		$buttons = '<div class="b" style="margin-bottom: 10px;">Sind die Eingaben korrekt übernommen worden?</div><button type="submit" class="pure-button pure-button-primary" name="correct">korrigieren</button><button type="submit" class="pure-button pure-button-primary" style="margin-left: 10px;" name="confirm">alles korrekt, absenden</button>';
 		if($input_data['image'])
-			$image_upload = '<img id="image_preview" src="img_tmp/'.$input_data['image'].'" alt="Bild" style="max-width: 350px; max-height: 350px;"/><input id="la_image" name="la_image" type="hidden" value="'.$input_data['image'].'"/>';
+			$image_upload = '<img id="image_preview" src="'.plugin_dir_url(__FILE__).'img_tmp/'.$input_data['image'].'" alt="Bild" style="max-width: 350px; max-height: 350px;"/><input id="la_image" name="la_image" type="hidden" value="'.$input_data['image'].'"/>';
 		else
 			$image_upload = '<input id="la_image" name="la_image" type="hidden" value=""/>';
 	}
@@ -57,7 +57,7 @@ if ($input->inputReceived()) {
 	if (isset($_POST['confirm'])) {
 		$buttons = '';
 		if ($input_data['image'])
-			copy('img_tmp/'.$input_data['image'],'img/'.$input_data['image']);
+			copy(plugin_dir_path(__FILE__).'img_tmp/'.$input_data['image'],plugin_dir_path(__FILE__).'img/'.$input_data['image']);
 		else
 			$image_upload = '<input id="la_image" name="la_image" type="hidden" value=""/>';
 		
@@ -113,6 +113,9 @@ if ($input->inputReceived()) {
 	function createUploader() {
 		var uploader = new qq.FineUploader({
 			element: $('fine-uploader'),
+			<?php if ($_SERVER["SERVER_ADDR"] == '127.0.0.1') { ?>
+			debug: true,
+			<?php } ?>
 			request: {
 				endpoint: '<?php echo plugin_dir_url(__FILE__) ?>fineuploader/endpoint.php'
 			},
@@ -125,6 +128,9 @@ if ($input->inputReceived()) {
 			callbacks:{
 				onSubmit: function() { $('image_preview').remove(); },
 				onComplete: function(id, fileName, responseJSON) {
+					<?php if ($_SERVER["SERVER_ADDR"] == '127.0.0.1') { ?>
+					console.log(JSON.stringify(responseJSON));
+					<?php } ?>
 					if (responseJSON.success) {
 						$('la_image').value = responseJSON.uploadName;
 					}

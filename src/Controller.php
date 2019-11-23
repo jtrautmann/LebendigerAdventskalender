@@ -47,6 +47,7 @@ class Controller {
     }
     
     public function activate() {
+        // TODO: create img and img_tmp directories
         $this->data_handler->initializeDatabase();
     }
 

@@ -90,12 +90,12 @@ else {
 	}
 	$randshift = rand(1,5);
 	$emailShifted = shift($controller->getHostInformation($nr, 'email'), $randshift);
-	echo '<tr><td class="l">E-Mail:</td><td><a href="javascript:linkTo_UnCryptMailto(\''.$emailShifted.'\','.$randshift.')"><script type="text/javascript">document.write(UnCryptMailto(\''.$emailShifted.'\','.$randshift.'));</script></a></td></tr>';
+	echo '<tr><td class="l">E-Mail:</td><td><a href="javascript:linkTo_UnCryptMailto(\''.$emailShifted.'\','.$randshift.')"><script type="text/javascript">document.write(UnCrypt(\''.$emailShifted.'\','.$randshift.'));</script></a></td></tr>';
 	echo '</table>';
 	echo '<br/></div></div>';
 	$image = $controller->getHostInformation($nr, 'image');
 	if($image)
-		echo '<div class="bild"><a target="_blank" href="img/'.$image.'" data-lightbox="bild"><img src="img/'.$image.'"/></a></div>';
+		echo '<div class="bild"><a target="_blank" href="'.plugin_dir_url(__FILE__).'img/'.$image.'" data-lightbox="bild"><img src="'.plugin_dir_url(__FILE__).'img/'.$image.'"/></a></div>';
 	$registration = $controller->getHostInformation($nr, 'registration');
 	if($registration) {
 		$max_participants = $controller->getHostInformation($nr, 'max_participants');

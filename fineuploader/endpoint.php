@@ -1,4 +1,3 @@
-#!/usr/machine/bin/php-cgi
 <?php
 
 $targetdir = '../img_tmp/';	// with trailing slash
