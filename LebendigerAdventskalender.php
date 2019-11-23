@@ -18,9 +18,12 @@ class LebendigerAdventskalender {
     public function __construct() {
         // add administrator tool to administrator menu
         add_action('admin_menu', array($this, 'addToMenu'));
-
-        // add autoload function
+        
+        // add autoload functions
         spl_autoload_register(array($this, 'autoload'));
+        if ($_SERVER["SERVER_ADDR"] == '127.0.0.1') {
+            require_once(ABSPATH."../../vendor/autoload.php");
+        }
 
         // add functions collection
         include(plugin_dir_path(__FILE__)."src/functions.php");
