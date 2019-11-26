@@ -1,0 +1,88 @@
+@import url("http://yui.yahooapis.com/pure/0.3.0/pure-min.css");
+@import url("../lightbox/lightbox.css");
+@import url("https://fonts.googleapis.com/css?family=Love+Ya+Like+A+Sister");
+
+input, textarea, label, .pure-button-primary { font-family: "Trebuchet MS", Arial, Helvetica, sans-serif; }
+a { color: #333; text-decoration: none; }
+a:hover { color: #900; }
+.main {
+	width: 740px;
+	height: 619px;
+	padding: 20px;
+	background-image: url('../pics/back.jpg');
+	position: relative;
+}
+#year {
+	font-family: 'Love Ya Like A Sister';
+	font-size: 20pt;
+	color: #ffffee;
+	position: absolute;
+	top: 16px; left: 274px;
+}
+.top {
+	height: 78px;
+	margin: -20px -20px 30px -20px;
+	background-image: url('../pics/adventskalender-schrift.jpg');
+	text-align: right;
+	-moz-box-shadow:    0px 2px 2px 0px #666;
+	-webkit-box-shadow: 0px 2px 2px 0px #666;
+	box-shadow:         0px 2px 2px 0px #666;
+}
+.top a {
+	display: block;
+	float: left;
+	height: 78px;
+	width: 350px;
+}
+.info {
+	float: left;
+	width: 500px;
+	margin-right: 10px;
+	margin-bottom: 20px;
+}
+.info h3 {
+	margin:  0;
+	padding: 3px 10px;
+	background-color: #fff;
+}
+.i {
+	max-height: 375px;
+	overflow: auto;
+	padding: 0 10px;
+	background-image: url('../pics/alphaoverlay.png');
+}
+.i table, .i td {
+	border: none;
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+.l {
+	font-weight: bold;
+	padding-right: 10px;
+	text-align: right;
+	vertical-align: top;
+}
+.s { padding-top: 15px; }
+.bild { margin-bottom: 10px; }
+.bild img{
+	max-width: 230px;
+	max-height: 375px;
+}
+.formular, .misc {
+	clear: left;
+	background-image: url('../pics/alphaoverlay.png');
+	width: 720px;
+	padding: 10px;
+}
+.formular h3 {
+	margin: -10px -10px 10px -10px;
+	padding: 3px 10px;
+	background-color: #fff;
+}
+.formular form { text-align: center; }
+.formular input { margin-right: 20px; }
+.f { background-color: #faa; }
+.misc {
+	text-align: center;
+	font-size: 14pt;
+}
