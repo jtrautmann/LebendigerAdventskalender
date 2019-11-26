@@ -140,4 +140,3 @@ else {
 ?>
 
 </div><!-- main -->
-<script src="lightbox/lightbox-plus-jquery.min.js"></script>

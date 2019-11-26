@@ -65,7 +65,7 @@ a:hover { color: #900; }
 .s { padding-top: 15px; }
 .bild { margin-bottom: 10px; }
 .bild img{
-	max-width: 355px;
+	max-width: 230px;
 	max-height: 375px;
 }
 .formular, .misc {

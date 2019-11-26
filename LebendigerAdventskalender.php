@@ -71,6 +71,8 @@ class LebendigerAdventskalender {
                                     plugin_dir_url(__FILE__).'assets/door.css');
                 wp_enqueue_script('lebendiger_adventskalender_door',
                                     plugin_dir_url(__FILE__).'assets/door.js');
+                wp_enqueue_script('lebendiger_adventskalender_lightbox',
+                                    plugin_dir_url(__FILE__).'lightbox/lightbox-plus-jquery.min.js');
                 break;
             case ShowState::RESERVATION:
                 wp_register_style('lebendiger_adventskalender_reservation',
