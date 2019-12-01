@@ -4,13 +4,34 @@ class Controller {
 
     private $data_handler;
     private $post_manager;
-
+    private $input_handler;
+    
     public function __construct() {
         // instantiate attributes
         $this->data_handler = new DataHandler();
         $this->post_manager = new PostManager();
+        $this->input_handler = new InputHandler();
     }
 
+    public function getShowState() {
+        if (!$this->isActiveCalendar()) {
+            return ShowState::INACTIVE;
+        }
+        if (!$this->input_handler->doorNumberSet()) {
+            return ShowState::CALENDAR;
+        }
+        $nr = $this->getDoorNumberInput();
+        $door_end_time = mktime(23,59,59,12,$nr,date('Y'));
+        $now = time();
+        if ($now > $door_end_time) {
+            return ShowState::PAST_DOOR;
+        }
+        if (!$this->hasHost($nr)) {
+            return ShowState::RESERVATION;
+        }
+        return ShowState::DOOR;
+    }
+    
     public function activate() {
         $this->data_handler->initializeDatabase();
     }
@@ -72,6 +93,10 @@ class Controller {
 
     public function getParticipantInformation($day, $index, $var) {
         return $this->data_handler->getParticipantInformation($day, $index, $var);
+    }
+
+    public function getDoorNumberInput() {
+        return $this->input_handler->getDoorNumber();
     }
 
 }

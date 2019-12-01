@@ -5,25 +5,24 @@ $WEEK_DAYS = array('Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freita
 
 // ---- initialize variables ----
 $controller = new Controller();
-$nr = filter_input(INPUT_GET,'nr',FILTER_SANITIZE_NUMBER_INT);
-if($nr<1 || $nr>24) {
-	$nr = NULL;
-}
+$nr = $controller->getDoorNumberInput();
 
 // ---- choose output ----
-if (!$nr) {
-	// show calendar
-	include(plugin_dir_path(__FILE__).'calendar.php');
-	return;
+switch ($controller->getShowState()) {
+	case ShowState::CALENDAR:
+		// show calendar
+		include(plugin_dir_path(__FILE__).'calendar.php');
+		break;
+	case ShowState::PAST_DOOR:
+		// TODO: door in the past
+		break;
+	case ShowState::RESERVATION:
+		// show reservation
+		include(plugin_dir_path(__FILE__).'reservation.php');
+		break;
+	case ShowState::DOOR:
+		// show door
+		include(plugin_dir_path(__FILE__).'door.php');
+		break;
 }
 
-// TODO: door in the past
-
-if (!$controller->hasHost($nr)) {
-	// show reservation
-	include(plugin_dir_path(__FILE__).'reservation.php');
-	return;
-}
-
-// show door
-include(plugin_dir_path(__FILE__).'door.php');

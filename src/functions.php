@@ -5,17 +5,13 @@ function get_current_url() {
 }
 
 function shift($s,$d) {
+	$r = '';
 	for($i=0; $i<strlen($s); $i++){
 		$n = ord($s[$i]);
 		if($n>=8364) $n = 128;
 		$r .= chr($n+$d);
 	}
 	return $r;
-}
-
-function rand_shift($s) {
-    $rand = rand(1,5);
-	$emailShifted = shift($s,$rand);
 }
 
 // https://stackoverflow.com/questions/5809774/manipulate-a-url-string-by-adding-get-parameters

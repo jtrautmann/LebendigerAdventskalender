@@ -30,7 +30,7 @@ class LebendigerAdventskalender {
         register_deactivation_hook(__FILE__, array($this, 'deactivate'));
 
         // add styles and scripts
-        add_action('wp_loaded', array($this, 'register'));
+        add_action('wp_loaded', array($this, 'addStylesAndScripts'));
 
         // instantiate controller
         $this->controller = new Controller();
@@ -52,14 +52,25 @@ class LebendigerAdventskalender {
         include(plugin_dir_path(__FILE__).'admin.php');
     }
 
-    public function register() {
-        // register plugin styles
-        wp_register_style('lebendiger_adventskalender_calendar', plugin_dir_url(__FILE__).'assets/calendar.css');
-        wp_register_style('lebendiger_adventskalender_door', plugin_dir_url(__FILE__).'assets/door.css');
-        wp_register_style('lebendiger_adventskalender_reservation', plugin_dir_url(__FILE__).'assets/reservation.css');
+    public function addStylesAndScripts() {
+        // enqueue plugin styles and scripts
+        switch ($this->controller->getShowState()) {
+            case ShowState::CALENDAR:
+                wp_enqueue_style('lebendiger_adventskalender_calendar',
+                                    plugin_dir_url(__FILE__).'assets/calendar.css');
+                break;
+            case ShowState::DOOR:
+                wp_enqueue_style('lebendiger_adventskalender_door',
+                                    plugin_dir_url(__FILE__).'assets/door.css');
+                wp_enqueue_script('lebendiger_adventskalender_door',
+                                    plugin_dir_url(__FILE__).'assets/door.js');
+                break;
+            case ShowState::RESERVATION:
+                wp_enqueue_style('lebendiger_adventskalender_reservation',
+                                    plugin_dir_url(__FILE__).'assets/reservation.css');
+                break;
+        }
 
-        // register plugin scipts
-        wp_register_script('lebendiger_adventskalender_door', plugin_dir_url(__FILE__).'assets/door.js');
     }
 
     public function autoload($class) {

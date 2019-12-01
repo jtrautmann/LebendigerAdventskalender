@@ -64,7 +64,7 @@ else {
 	// output host information
 	echo '<div class="info">';
 	$w = date('w', mktime(0,0,0,12,$nr,date('Y')));
-	echo '<h3>'.$WEEK_DAYS[$w].', '.$nr.'.</h3>';
+	echo '<h3>'.$WEEK_DAYS[$w].', der '.$nr.'. Dezember</h3>';
 	echo '<div class="i">';
 	echo '<h2>'.$controller->getHostInformation($nr, 'title').'</h2>';
 	$description = $controller->getHostInformation($nr, 'description');
@@ -86,9 +86,11 @@ else {
 	echo '<tr><td class="l">Ab wann:</td><td>'.$controller->getHostInformation($nr, 'time').'</td></tr>';
 	echo '<tr><td class="l s">Gastgeber:</td><td class="s">'.$controller->getHostInformation($nr, 'name').'</td></tr>';
 	$phone = $controller->getHostInformation($nr, 'phonenumber');
-	if($phone)
+	if($phone) {
 		echo '<tr><td class="l">Telefonnr.:</td><td>'.$phone.'</td></tr>';
-	$emailShifted = rand_shift($controller->getHostInformation($nr, 'email'));
+	}
+	$randshift = rand(1,5);
+	$emailShifted = shift($controller->getHostInformation($nr, 'email'), $randshift);
 	echo '<tr><td class="l">E-Mail:</td><td><a href="javascript:linkTo_UnCryptMailto(\''.$emailShifted.'\','.$randshift.')"><script type="text/javascript">document.write(UnCryptMailto(\''.$emailShifted.'\','.$randshift.'));</script></a></td></tr>';
 	echo '</table>';
 	echo '<br/></div></div>';
