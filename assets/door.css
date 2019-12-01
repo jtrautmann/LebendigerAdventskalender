@@ -10,6 +10,14 @@ a:hover { color: #900; }
 	height: 619px;
 	padding: 20px;
 	background-image: url('../pics/back.jpg');
+	position: relative;
+}
+#year {
+	font-family: 'Love Ya Like A Sister';
+	font-size: 20pt;
+	color: #ffffee;
+	position: absolute;
+	top: 12px; left: 274px;
 }
 .top {
 	height: 78px;
