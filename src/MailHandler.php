@@ -2,17 +2,18 @@
 
 class MailHandler {
 
+    /** @var string */
     private $sender;
 
-    public function __construct($sender) {
+    public function __construct(string $sender) {
         $this->setSender($sender);
     }
 
-    public function setSender($sender) {
+    public function setSender(string $sender) {
         $this->sender = $sender;
     }
 
-    public function sendMail($recipient, $subject, $text) {
+    public function sendMail(string $recipient, string $subject, string $text) {
         $encoded_subject = '=?utf-8?B?'.base64_encode($subject).'?=';
         $headers = [];
         $headers[] = "MIME-Version: 1.0";

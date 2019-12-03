@@ -1,7 +1,7 @@
 <?php
 
 // ---- functions ----
-function echo_participant_formular($nr, $input=false, $name=NULL, $email=NULL, $valid_email=false) {
+function echo_participant_formular(int $nr, InputData $input) {
 	// TODO: create with Controller
 	echo '<div class="formular">
 <h3>Es sind noch Plätze frei!</h3>
@@ -9,7 +9,8 @@ function echo_participant_formular($nr, $input=false, $name=NULL, $email=NULL, $
 <fieldset>
 <label for="la_name">Name</label>
 <input id="la_name" name="la_name" type="text" required';
-	if ($input) {
+	if ($input->inputReceived()) {
+		$name = $input->getData()['name'];
 		if(!$name)
 			echo ' class="f"';
 		else
@@ -18,13 +19,16 @@ function echo_participant_formular($nr, $input=false, $name=NULL, $email=NULL, $
 	echo '>
 <label for="la_email">E-Mail</label>
 <input id="la_email" name="la_email" type="email" required';
-	if ($input) {
+	if ($input->inputReceived()) {
+		$email = $input->getData()['email'];
 		if(!$email)
 			echo '" class="f"';
 		else {
 			echo ' value="'.$email.'"';
-			if (!$valid_email)
+			if (in_array(InputErrorType::INVALID_EMAIL,$input->getError()->get_error_codes())) {
+				// invalid email
 				echo '" class="f"';
+			}
 		}
 	}
 	echo '>
@@ -59,7 +63,6 @@ if ($diffMillisec > 0) {
 	echo '<div class="misc"><b>Türchen Nr. '.$nr.' ist schon reserviert. Für die Anmeldung bist du zu früh!</b><br/>Versuch\'s in <span id="timer">'.$diffMillisec.' ms</span> nochmal...</div>';
 }
 else {
-	
 	// output host information
 	echo '<div class="info">';
 	$w = date('w', mktime(0,0,0,12,$nr,date('Y')));
@@ -102,34 +105,37 @@ else {
 		$num_participants = $controller->getParticipantsNumber($nr);
 		if(!$max_participants || $num_participants < $max_participants) {
 			// registration still possible
-			if($_SERVER['REQUEST_METHOD']=="POST") {
-				// TODO: create with Controller
-				$args = array(
-					'la_name' => FILTER_SANITIZE_STRING,
-					'la_email' => FILTER_SANITIZE_EMAIL
-				);
-				$inputs = filter_input_array(INPUT_POST, $args);
+			$input = $controller->getRegistrationInput();
 
-				$valid_email = filter_input(INPUT_POST, 'la_email', FILTER_VALIDATE_EMAIL);
-				if ($inputs['la_name'] && $inputs['la_email'] && $valid_email) {
-					// registration
-					// TODO: use InputHandler
-					$data = [];
-					foreach ($inputs as $key => $value) {
-						// delete the "la_" prefix of the key
-						$new_key = substr($key, 3);
-						$data[$new_key] = $value;
+			if ($input->inputReceived()) {
+				$input_data = $input->getData();
+
+				if ($input->hasError()) {
+					echo '<div class="formular f">';
+					echo '<h3>Anmeldung konnte nicht erfolgreich abgeschlossen werden</h3>';
+					$error = $input->getError();
+					if (in_array(InputErrorType::INVALID_EMAIL,$error->get_error_codes())) {
+						echo '<p>Keine gültige E-Mail-Adresse!</p>';
 					}
-					if ($controller->addParticipant($nr, $data))
-						echo '<div class="formular" style="color: #0075e2;"><h3>Anmeldung erfolgreich</h3>Viel Spaß bei diesem Türchen!</div>';
-					else
-						echo '<div class="formular f"><h3>Anmeldung konnte nicht erfolgreich abgeschlossen werden</h3>Versuche es bitte erneut</div>';
+					if (in_array(InputErrorType::MANDATORY_MISSING,$error->get_error_codes())) {
+						echo '<p>Fehlende Pflichtfelder!</p>';
+					}
+					echo '</div>';
 				}
-				else
-					echo_participant_formular($nr, true, $name, $email, $valid_email);
+				else {
+					// registration
+					if ($controller->addParticipant($nr, $input_data)) {
+						echo '<div class="formular" style="color: #0075e2;"><h3>Anmeldung erfolgreich</h3>Viel Spaß bei diesem Türchen!</div>';
+					}
+					else {
+						echo '<div class="formular f"><h3>Anmeldung konnte nicht erfolgreich abgeschlossen werden</h3>Versuche es bitte erneut</div>';
+					}
+				}
 			}
-			else
-				echo_participant_formular($nr);
+			
+			if (!$input->inputReceived() || $input->hasError()) {
+				echo_participant_formular($nr, $input);
+			}
 		}
 		else
 			echo '<div class="formular"><h3>Keine Plätze mehr frei</h3>Leider wurde die maximale Teilnehmerzahl schon erreicht!<br/>Du kannst den / die Gastgeber persönlich fragen, ob du trotzdem dazkommen darfst.</div>';

@@ -4,10 +4,13 @@ class Controller {
 
     private static $controller;
 
+    /** @var DataHandler */
     private $data_handler;
+    /** @var PostHandler */
     private $post_handler;
+    /** @var InputHandler */
     private $input_handler;
-    private $output_handler;
+    /** @var MailHandler */
     private $mail_handler;
     
     public static function getController() : Controller {
@@ -21,8 +24,7 @@ class Controller {
         // instantiate attributes
         $this->data_handler = new DataHandler();
         $this->post_handler = new PostHandler();
-        $this->input_handler = new InputHandler();
-        $this->output_handler = new OutputHandler();
+        $this->input_handler = new InputHandler($this->data_handler);
         // TODO: make mail address of sender configurable
         $this->mail_handler = new MailHandler('bl-prweb@sfc-karlsruhe.de');
     }
@@ -97,7 +99,6 @@ class Controller {
         // TODO: add link to page to change the data and see the participants
         $text = "Dein Adventskalender-Türchen am $day. Dezember";
         $text .= " wurde erfolgreich eingetragen!\n";
-        $text .= "Hier alle Daten im Überblick:\n";
         $text .= $this->getHostInformationOutput($day);
         $this->mail_handler->sendMail($data['email'], $subject, $text);
 
@@ -126,7 +127,6 @@ class Controller {
         $subject = "Dein SfC-Adventskalender-Türchen wurde bearbeitet";
         $text = "Dein Adventskalender-Türchen am $day. Dezember";
         $text .= " wurde bearbeitet!\n";
-        $text .= "Hier alle Daten im Überblick:\n";
         $text .= $this->getHostInformationOutput($day);
         $this->mail_handler->sendMail($email, $subject, $text);
 
@@ -157,6 +157,14 @@ class Controller {
         return $this->data_handler->hasHost($day);
     }
 
+    /**
+     * Returns information about a host.
+     * 
+     * @param int $day the day of december this year
+     * @param string $var the database variable
+     * 
+     * @return mixed the value of the variable of the respective host
+     */
     public function getHostInformation($day, $var) {
         return $this->data_handler->getHostInformation($day, $var);
     }
@@ -166,7 +174,7 @@ class Controller {
     }
 
     public function getHostOutput($key) {
-        return $this->output_handler->getHostOutput($key);
+        return $this->data_handler->getHostOutput($key);
     }
 
     public function addParticipant($day, $data) {
@@ -177,27 +185,123 @@ class Controller {
         // send confirmation mail to participant
         $subject = 'Erfolgreiche Anmeldung zum SfC-Adventskalender-Türchen';
         $text = "Du hast dich erfolgreich für das Adventskalender-Türchen";
-        $text .= " von heute, den $day. Dezember angemeldet! Viel Spaß bei diesem Türchen!";
+        $text .= " von heute, dem $day. Dezember, angemeldet! Viel Spaß bei diesem Türchen!";
         $this->mail_handler->sendMail($data['email'], $subject, $text);
 
         // send mail to host
+        $name = $data['name'];
         $subject = 'Anmeldung zu deinem SfC-Adventskalender-Türchen';
-        $text = "Zu deinem Adventskalender-Türchen von heute, den $day.";
-        $text .= " Dezember hat sich jemand angemeldet:\n";
-        // TODO: use DataHandler and OutputHandler
-        $text .= "Name: ".$data['name']."\n";
-        $text .= "E-Mail: ".$data['email'];
+        $text = "Zu deinem Adventskalender-Türchen von heute, dem $day.";
+        $text .= " Dezember, hat sich jemand angemeldet:\n";
+        $text .= $this->getParticipantInformationOutput($day,$name);
+        $text .= "\n";
+        $text .= $this->getParticipantsInformationOutput($day);
         $this->mail_handler->sendMail($this->getHostInformation($day, 'email'), $subject, $text);
         
         return true;
+    }
+
+    public function updateParticipant($day, $name, $data) {
+        if (!$this->hasParticipant($day, $name)) {
+            return false;
+        }
+
+        $email = $this->getParticipantInformation($day, $name, 'email');
+
+        if (!$this->data_handler->updateParticipant($day, $name, $data)) {
+            return false;
+        }
+
+        if ($data['email'] && $email != $data['email']) {
+            // send mail to old participant email
+            $subject = "Deine Anmeldung zum Adventskalender-Türchen wurde bearbeitet";
+            $text = "Deine Anmeldung für das heutige Adventskalender-Türchen";
+            $text .= " wurde bearbeitet: Deine Mail-Adresse wurde auf ";
+            $text .= $data['email']." gesetzt.";
+            $this->mail_handler->sendMail($email, $subject, $text);
+            
+            $email = $data['email'];
+        }
+
+        $old_name = $name;
+        if ($data['name']) {
+            $name = $data['name'];
+        }
+
+        // send mail to participant
+        $subject = "Deine Anmeldung zum Adventskalender-Türchen wurde bearbeitet";
+        $text = "Deine Anmeldung für das Adventskalender-Türchen von heute,";
+        $text .= " dem $day. Dezember, wurde bearbeitet:\n";
+        $text .= $this->getParticipantInformationOutput($day,$name);
+        $this->mail_handler->sendMail($email, $subject, $text);
+
+        // send mail to host
+        $subject = "Bearbeitete Anmeldung zu deinem Adventskalender-Türchen";
+        $text = "Die Anmeldung von $old_name zu deinem Adventskalender-Türchen von heute,";
+        $text .= " dem $day. Dezember, wurde bearbeitet:\n";
+        $text .= $this->getParticipantInformationOutput($day,$name);
+        $text .= "\n";
+        $text .= $this->getParticipantsInformationOutput($day);
+        $this->mail_handler->sendMail($email, $subject, $text);
+
+        return true;
+    }
+
+    public function deleteParticipant($day, $name) {
+        if (!$this->hasParticipant($day, $name)) {
+            return false;
+        }
+
+        $mail = $this->getParticipantInformation($day, $name, 'email');
+
+        if (!$this->data_handler->deleteParticipant($day, $name)) {
+            return false;
+        }
+
+        // send mail to participant
+        $subject = 'Abmeldung vom SfC-Adventskalender-Türchen';
+        $text = "Deine Anmeldung für das Adventskalender-Türchen";
+        $text .= " von heute, dem $day. Dezember, wurde gelöscht!";
+        $this->mail_handler->sendMail($mail, $subject, $text);
+
+        // send mail to host
+        $mail = $this->getHostInformation($day, 'email');
+        $subject = 'Abmeldung von deinem SfC-Adventskalender-Türchen';
+        $text = "Die Anmeldung von $name für das Adventskalender-Türchen";
+        $text .= " von heute, dem $day. Dezember, wurde gelöscht!\n";
+        $text .= $this->getParticipantsInformationOutput($day);
+        $this->mail_handler->sendMail($mail, $subject, $text);
+
+        return true;
+    }
+
+    public function hasParticipant($day, $name) {
+        return $this->data_handler->hasParticipant($day, $name);
     }
 
     public function getParticipantsNumber($day) {
         return $this->data_handler->getParticipantsNumber($day);
     }
 
-    public function getParticipantInformation($day, $index, $var) {
-        return $this->data_handler->getParticipantInformation($day, $index, $var);
+    /**
+     * Returns information about a participant.
+     * 
+     * @param int $day the day of december this year
+     * @param int|string $participant the index or the name of the participant
+     * @param string $var the database variable
+     * 
+     * @return mixed the value of the variable of the respective participant
+     */
+    public function getParticipantInformation($day, $participant, $var) {
+        return $this->data_handler->getParticipantInformation($day, $participant, $var);
+    }
+
+    public function getParticipantVariables() : array {
+        return $this->data_handler->getParticipantVariables();
+    }
+
+    public function getParticipantOutput($key) {
+        return $this->data_handler->getParticipantOutput($key);
     }
 
     public function getDoorNumberInput() {
@@ -205,31 +309,62 @@ class Controller {
     }
 
     public function getReservationMandatoryInput() {
-        // TODO: use DataHandler
-        return InputHandler::RESERVATION_MANDATORY;
+        return $this->data_handler->getReservationMandatoryInput();
+    }
+
+    public function getRegistrationMandatoryInput() {
+        return $this->data_handler->getRegistrationMandatoryInput();
     }
 
     public function getReservationInput() : InputData {
         return $this->input_handler->getReservationInput();
     }
 
+    public function getRegistrationInput() : InputData {
+        return $this->input_handler->getRegistrationInput();
+    }
+
     private function getHostInformationOutput($day) {
-        $text = "";
+        $text = "Hier alle Daten im Überblick:\n\n";
         foreach ($this->getHostVariables() as $var) {
             $text .= $this->getHostOutput($var).": ";
             $val = $this->getHostInformation($day,$var);
-            if (!isset($val)) {
-                $text .= "keine Angabe";
-            }
-            else if (is_bool($val)) {
-                $text .= $val ? "ja" : "nein";
-            }
-            else {
-                $text .= $val;
-            }
+            $text .= $this->getValueOutput($val);
             $text .= "\n";
         }
         return $text;
+    }
+
+    private function getParticipantInformationOutput($day, $participant) {
+        $text = "";
+        
+        foreach($this->getParticipantVariables() as $var) {
+            $text.= $this->getParticipantOutput($var).": ";
+            $val = $this->getParticipantInformation($day,$participant,$var);
+            $text .= $this->getValueOutput($val);
+            $text .= "\n";
+        }
+        
+        return $text;
+    }
+
+    private function getParticipantsInformationOutput($day) {
+        $text = "Hier alle bisherigen Anmeldungen im Überblick:\n\n";
+        for ($i = 0; $i < $this->getParticipantsNumber($day); $i++) {
+            $text .= $this->getParticipantInformationOutput($day,$i);
+            $text .= "\n";
+        }
+        return $text;
+    }
+
+    private function getValueOutput($val) {
+        if (!isset($val)) {
+            return "keine Angabe";
+        }
+        if (is_bool($val)) {
+            return $val ? "ja" : "nein";
+        }
+        return $val;
     }
 
 }

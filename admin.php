@@ -2,16 +2,23 @@
 // ---- constants ----
 // commands
 const ACTIVATION_COMMAND_STRING = "activation_command";
-const ACTIVATE = 1;
+const ACTIVATE   = 1;
 const DEACTIVATE = 2;
 
-const DELETION_COMMAND_STRING = "deletion_command";
-const DELETION_CONFIRMATION_COMMAND_STRING = "deletion_confirmation";
-const EDITING_COMMAND_STRING = "editing_command";
-const EDITING_CONFIRMATION_COMMAND_STRING = "editing_confirmation";
+const HOST_DELETION_COMMAND_STRING              = "host_deletion_command";
+const HOST_DELETION_CONFIRMATION_COMMAND_STRING = "host_deletion_confirmation";
+const HOST_EDITING_COMMAND_STRING               = "host_editing_command";
+const HOST_EDITING_CONFIRMATION_COMMAND_STRING  = "host_editing_confirmation";
+
+const PARTICIPANT_DELETION_COMMAND_STRING              = "participant_deletion_command";
+const PARTICIPANT_DELETION_CONFIRMATION_COMMAND_STRING = "participant_deletion_confirmation";
+const PARTICIPANT_EDITING_COMMAND_STRING               = "paritcipant_editing_command";
+const PARTICIPANT_EDITING_CONFIRMATION_COMMAND_STRING  = "participant_editing_confirmation";
+
 
 // ---- initialize variables ----
 $controller = Controller::getController();
+$today = date('j');
 
 // ---- output ----
 wp_enqueue_style('lebendiger_adventskalender_admin');
@@ -54,16 +61,16 @@ if ($activation_command) {
     }
 }
 
-$deletion_command = filter_input(INPUT_POST,DELETION_COMMAND_STRING, FILTER_SANITIZE_NUMBER_INT);
-if ($deletion_command) {
+$host_deletion_command = filter_input(INPUT_POST,HOST_DELETION_COMMAND_STRING,FILTER_SANITIZE_NUMBER_INT);
+if ($host_deletion_command) {
     echo '<div class="notice notice-warning">';
     echo '  <p>';
-    echo '      Möchtest du wirklich die Reservierung für den '.$deletion_command.'. Dezember löschen?';
+    echo '      Möchtest du wirklich die Reservierung für den '.$host_deletion_command.'. Dezember löschen?';
     echo '      <form action="'.get_current_url().'" method="post">';
-    echo '          <button class="button" type="submit" name="'.DELETION_CONFIRMATION_COMMAND_STRING.'" value="'.$deletion_command.'">';
+    echo '          <button class="button" type="submit" name="'.HOST_DELETION_CONFIRMATION_COMMAND_STRING.'" value="'.$host_deletion_command.'">';
     echo '              Löschen';
     echo '          </button>';
-    echo '          <button class="button" type="submit" name="'.DELETION_CONFIRMATION_COMMAND_STRING.'" value="0">';
+    echo '          <button class="button" type="submit" name="'.HOST_DELETION_CONFIRMATION_COMMAND_STRING.'" value="0">';
     echo '              Abbrechen';
     echo '          </button>';
     echo '      </form>';
@@ -71,36 +78,36 @@ if ($deletion_command) {
     echo '</div>';
 }
 
-$deletion_confirmation_command = filter_input(INPUT_POST,DELETION_CONFIRMATION_COMMAND_STRING, FILTER_SANITIZE_NUMBER_INT);
-if ($deletion_confirmation_command) {
+$host_deletion_confirmation_command = filter_input(INPUT_POST,HOST_DELETION_CONFIRMATION_COMMAND_STRING,FILTER_SANITIZE_NUMBER_INT);
+if ($host_deletion_confirmation_command) {
     // delete reservation
-    if ($controller->deleteHost($deletion_confirmation_command)) {
+    if ($controller->deleteHost($host_deletion_confirmation_command)) {
         echo '<div class="notice notice-success is-dismissible">';
-        echo '  <p>Die Reservierung für den '.$deletion_confirmation_command.'. Dezember wurde erfolgreich gelöscht.</p>';
+        echo '  <p>Die Reservierung für den '.$host_deletion_confirmation_command.'. Dezember wurde erfolgreich gelöscht.</p>';
         echo '</div>';
     }
     else {
         echo '<div class="notice notice-error is-dismissible">';
-        echo '  <p>Die Reservierung für den '.$deletion_confirmation_command.'. Dezember konnte nicht gelöscht werden.</p>';
+        echo '  <p>Die Reservierung für den '.$host_deletion_confirmation_command.'. Dezember konnte nicht gelöscht werden.</p>';
         echo '</div>';
     }
 }
 
-$editing_command = filter_input(INPUT_POST,EDITING_COMMAND_STRING, FILTER_SANITIZE_NUMBER_INT);
+$host_editing_command = filter_input(INPUT_POST,HOST_EDITING_COMMAND_STRING,FILTER_SANITIZE_NUMBER_INT);
 
-$editing_confirmation_command = filter_input(INPUT_POST,EDITING_CONFIRMATION_COMMAND_STRING, FILTER_SANITIZE_NUMBER_INT);
+$host_editing_confirmation_command = filter_input(INPUT_POST,HOST_EDITING_CONFIRMATION_COMMAND_STRING,FILTER_SANITIZE_NUMBER_INT);
 $error_invalid_email = false;
 $error_mandatory_fields = [];
 $input_data = [];
-if ($editing_confirmation_command) {
+if ($host_editing_confirmation_command) {
     $input = $controller->getReservationInput();
     if ($input->hasError()) {
         $input_data = $input->getData();
-        $editing_command = $editing_confirmation_command;
+        $host_editing_command = $host_editing_confirmation_command;
         $error = $input->getError();
         $errors = $error->get_error_codes();
         echo '<div class="notice notice-error is-dismissible">';
-        echo '  <p>Die Reservierung für den '.$editing_confirmation_command.'. Dezember konnte nicht bearbeitet werden.</p>';
+        echo '  <p>Die Reservierung für den '.$host_editing_confirmation_command.'. Dezember konnte nicht bearbeitet werden.</p>';
         if (in_array(InputErrorType::INVALID_EMAIL,$errors)) {
             $error_invalid_email = true;
             echo '  <p>Ungültige E-Mail-Adresse.</p>';
@@ -114,20 +121,93 @@ if ($editing_confirmation_command) {
         echo '</div>';
     }
     else {
-        // TODO: edit reservation
+        // edit reservation
         $data = $input->getData();
-        if ($controller->updateHost($editing_confirmation_command, $data)) {
+        if ($controller->updateHost($host_editing_confirmation_command, $data)) {
             echo '<div class="notice notice-success is-dismissible">';
-            echo '  <p>Die Reservierung für den '.$deletion_confirmation_command.'. Dezember wurde erfolgreich bearbeitet.</p>';
+            echo '  <p>Die Reservierung für den '.$host_editing_confirmation_command.'. Dezember wurde erfolgreich bearbeitet.</p>';
             echo '</div>';
 		}
 		else {
             echo '<div class="notice notice-error is-dismissible">';
-            echo '  <p>Die Reservierung für den '.$deletion_confirmation_command.'. Dezember konnte nicht bearbeitet werden.</p>';
+            echo '  <p>Die Reservierung für den '.$host_editing_confirmation_command.'. Dezember konnte nicht bearbeitet werden.</p>';
             echo '</div>';
 		}
     }
 }
+
+$participant_deletion_command = filter_input(INPUT_POST,PARTICIPANT_DELETION_COMMAND_STRING,FILTER_SANITIZE_STRING);
+if ($participant_deletion_command) {
+    echo '<div class="notice notice-warning">';
+    echo '  <p>';
+    echo '      Möchtest du wirklich die Anmeldung von '.$participant_deletion_command.' löschen?';
+    echo '      <form action="'.get_current_url().'" method="post">';
+    echo '          <button class="button" type="submit" name="'.PARTICIPANT_DELETION_CONFIRMATION_COMMAND_STRING.'" value="'.$participant_deletion_command.'">';
+    echo '              Löschen';
+    echo '          </button>';
+    echo '          <button class="button" type="submit" name="'.PARTICIPANT_DELETION_CONFIRMATION_COMMAND_STRING.'" value="0">';
+    echo '              Abbrechen';
+    echo '          </button>';
+    echo '      </form>';
+    echo '  </p>';
+    echo '</div>';
+}
+
+$participant_deletion_confirmation_command = filter_input(INPUT_POST,PARTICIPANT_DELETION_CONFIRMATION_COMMAND_STRING,FILTER_SANITIZE_STRING);
+if ($participant_deletion_confirmation_command) {
+    // delete reservation
+    if ($controller->deleteParticipant($today, $participant_deletion_confirmation_command)) {
+        echo '<div class="notice notice-success is-dismissible">';
+        echo '  <p>Die Anmeldung von '.$participant_deletion_confirmation_command.' wurde erfolgreich gelöscht.</p>';
+        echo '</div>';
+    }
+    else {
+        echo '<div class="notice notice-error is-dismissible">';
+        echo '  <p>Die Anmeldung von '.$participant_deletion_confirmation_command.' konnte nicht gelöscht werden.</p>';
+        echo '</div>';
+    }
+}
+
+$participant_editing_command = filter_input(INPUT_POST,PARTICIPANT_EDITING_COMMAND_STRING,FILTER_SANITIZE_STRING);
+
+$participant_editing_confirmation_command = filter_input(INPUT_POST,PARTICIPANT_EDITING_CONFIRMATION_COMMAND_STRING,FILTER_SANITIZE_STRING);
+if ($participant_editing_confirmation_command) {
+    $input = $controller->getRegistrationInput();
+    if ($input->hasError()) {
+        $input_data = $input->getData();
+        $participant_editing_command = $participant_editing_confirmation_command;
+        $error = $input->getError();
+        $errors = $error->get_error_codes();
+        echo '<div class="notice notice-error is-dismissible">';
+        echo '  <p>Die Anmeldung von '.$participant_editing_confirmation_command.' konnte nicht bearbeitet werden.</p>';
+        if (in_array(InputErrorType::INVALID_EMAIL,$errors)) {
+            $error_invalid_email = true;
+            echo '  <p>Ungültige E-Mail-Adresse.</p>';
+        }
+        if (in_array(InputErrorType::MANDATORY_MISSING,$errors)) {
+            foreach ($error->get_error_data(InputErrorType::MANDATORY_MISSING) as $value) {
+                $error_mandatory_fields[] = $value;
+                echo '  <p>Fehlende Pflichtfelder.</p>';
+            }
+        }
+        echo '</div>';
+    }
+    else {
+        // edit participant
+        $data = $input->getData();
+        if ($controller->updateParticipant($today, $participant_editing_confirmation_command, $data)) {
+            echo '<div class="notice notice-success is-dismissible">';
+            echo '  <p>Die Anmeldung von '.$participant_editing_confirmation_command.' wurde erfolgreich bearbeitet.</p>';
+            echo '</div>';
+		}
+		else {
+            echo '<div class="notice notice-error is-dismissible">';
+            echo '  <p>Die Anmeldung von '.$participant_editing_confirmation_command.' konnte nicht bearbeitet werden.</p>';
+            echo '</div>';
+		}
+    }
+}
+
 ?>
 
 <form action="<?php echo get_current_url() ?>" method="post">
@@ -154,6 +234,7 @@ if ($editing_confirmation_command) {
             <th>max. Teilnehmer</th>
             <th>E-Mail</th>
             <th>Telefonnummer</th>
+            <th>Bild</th>
             <th></th>
             <th></th>
         </tr>
@@ -169,10 +250,12 @@ if ($editing_confirmation_command) {
                 $max_participants = $controller->getHostInformation($i,'max_participants');
                 $email            = $controller->getHostInformation($i,'email');
                 $phonenumber      = $controller->getHostInformation($i,'phonenumber');
+                $image            = $controller->getHostInformation($i,'image');
 
                 echo'  <tr>';
                 echo '      <td>'.$i.'</td>';
-                if ($editing_command == $i) {
+                if ($host_editing_command == $i) {
+                    // show editing form
                     $name             = isset($input_data['name']) ? $input_data['name'] : $name;
                     $title            = isset($input_data['title']) ? $input_data['title'] : $title;
                     $description      = isset($input_data['description']) ? $input_data['description'] : $description;
@@ -182,6 +265,7 @@ if ($editing_confirmation_command) {
                     $max_participants = isset($input_data['max_participants']) ? $input_data['max_participants'] : $max_participants;
                     $email            = isset($input_data['email']) ? $input_data['email'] : $email;
                     $phonenumber      = isset($input_data['phonenumber']) ? $input_data['phonenumber'] : $phonenumber;
+                    $image            = isset($input_data['image']) ? $input_data['image'] : $image;
                     
                     echo '      <form action="'.get_current_url().'" method="post">';
                     echo '      <td '.(in_array('name',$error_mandatory_fields) ? ' class="la-error"' : '').'>';
@@ -211,8 +295,11 @@ if ($editing_confirmation_command) {
                     echo '      <td '.(in_array('phonenumber',$error_mandatory_fields) ? ' class="la-error"' : '').'>';
                     echo '          <input name="la_phonenumber" type="text" value="'.$phonenumber.'"/>';
                     echo '      </td>';
+                    echo '      <td '.(in_array('image',$error_mandatory_fields) ? ' class="la-error"' : '').'>';
+                    echo '          <input name="la_image" type="text" value="'.$image.'"/>';
+                    echo '      </td>';
                     echo '      <td>';
-                    echo '          <button type="submit" title="Senden" name="'.EDITING_CONFIRMATION_COMMAND_STRING.'" value="'.$i.'">';
+                    echo '          <button type="submit" title="Senden" name="'.HOST_EDITING_CONFIRMATION_COMMAND_STRING.'" value="'.$i.'">';
                     echo '              <span class="dashicons dashicons-yes-alt"/>';
                     echo '          </button>';
                     echo '      </td>';
@@ -226,6 +313,7 @@ if ($editing_confirmation_command) {
                     echo '      </td>';
                 }
                 else {
+                    // show reservation data
                     echo '      <td>'.$name.'</td>';
                     echo '      <td>'.$title.'</td>';
                     echo '      <td>'.$description.'</td>';
@@ -235,18 +323,20 @@ if ($editing_confirmation_command) {
                     echo '      <td>'.$max_participants.'</td>';
                     echo '      <td><a href="mailto:'.$email.'">'.$email.'</a></td>';
                     echo '      <td>'.$phonenumber.'</td>';
+                    echo '      <td>'.$image.'</td>';
                     
-                    if (!$editing_command) {
+                    if (!$host_editing_command) {
+                        // show editing and deletion buttons
                         echo '      <td>';
                         echo '          <form action="'.get_current_url().'" method="post">';
-                        echo '              <button type="submit" title="Bearbeiten" name="'.EDITING_COMMAND_STRING.'" value="'.$i.'">';
+                        echo '              <button type="submit" title="Bearbeiten" name="'.HOST_EDITING_COMMAND_STRING.'" value="'.$i.'">';
                         echo '                  <span class="dashicons dashicons-edit"/>';
                         echo '              </button>';
                         echo '          </form>';
                         echo '      </td>';
                         echo '      <td>';
                         echo '          <form action="'.get_current_url().'" method="post">';
-                        echo '              <button type="submit" title="Löschen" name="'.DELETION_COMMAND_STRING.'" value="'.$i.'">';
+                        echo '              <button type="submit" title="Löschen" name="'.HOST_DELETION_COMMAND_STRING.'" value="'.$i.'">';
                         echo '                  <span class="dashicons dashicons-trash"/>';
                         echo '              </button>';
                         echo '          </form>';
@@ -275,18 +365,17 @@ if ($now < $start || $now > $end) {
     return;
 }
 
-$day = date('j');
-if (!$controller->hasHost($day)) {
+if (!$controller->hasHost($today)) {
     echo 'Keine Reservierung für heute vorhanden.';
     return;
 }
 
-if (!$controller->getHostInformation($day, 'registration')) {
+if (!$controller->getHostInformation($today, 'registration')) {
     echo 'Für das heutige Türchen sind Anmeldungen nicht aktiviert.';
     return;
 }
 
-$participants = $controller->getParticipantsNumber($day);
+$participants = $controller->getParticipantsNumber($today);
 if ($participants == 0) {
     echo 'Für das heutige Türchen hat sich bisher noch keiner angemeldet.';
     return;
@@ -299,14 +388,68 @@ if ($participants == 0) {
         <tr>
             <th>Name</th>
             <th>E-Mail</th>
+            <th></th>
+            <th></th>
         </tr>
         <?php
         for ($i = 0; $i < $participants; $i++) {
-            $email = $controller->getParticipantInformation($day,$i,'email');
-            $name = $controller->getParticipantInformation($day,$i,'name');
+            $email = $controller->getParticipantInformation($today,$i,'email');
+            $name  = $controller->getParticipantInformation($today,$i,'name');
             echo '  <tr>';
-            echo '      <td>'.$name.'</td>';
-            echo '      <td><a href="mailto:'.$email.'">'.$email.'</a></td>';
+            if ($participant_editing_command == $name) {
+                // show editing form
+                $old_name = $name;
+                $name  = isset($input_data['name']) ? $input_data['name'] : $name;
+                $email = isset($input_data['email']) ? $input_data['email'] : $email;
+                
+                echo '      <form action="'.get_current_url().'" method="post">';
+                echo '      <td '.(in_array('name',$error_mandatory_fields) ? ' class="la-error"' : '').'>';
+                echo '          <input name="la_name" type="text" value="'.$name.'"/>';
+                echo '      </td>';
+                echo '      <td'.($error_invalid_email | in_array('email',$error_mandatory_fields) ? ' class="la-error"' : '').'>';
+                echo '          <input name="la_email" type="text" value="'.$email.'"/>';
+                echo '      </td>';
+                echo '      <td>';
+                echo '          <button type="submit" title="Senden" name="'.PARTICIPANT_EDITING_CONFIRMATION_COMMAND_STRING.'" value="'.$old_name.'">';
+                echo '              <span class="dashicons dashicons-yes-alt"/>';
+                echo '          </button>';
+                echo '      </td>';
+                echo '      </form>';
+                echo '      <td>';
+                echo '          <form action="'.get_current_url().'" method="post">';
+                echo '              <button type="submit" title="Abbrechen">';
+                echo '                  <span class="dashicons dashicons-dismiss"/>';
+                echo '              </button>';
+                echo '          </form>';
+                echo '      </td>';
+            }
+            else {
+                // show registration data
+                echo '      <td>'.$name.'</td>';
+                echo '      <td><a href="mailto:'.$email.'">'.$email.'</a></td>';
+                
+                if (!$participant_editing_command) {
+                    // show editing and deletion buttons
+                    echo '      <td>';
+                    echo '          <form action="'.get_current_url().'" method="post">';
+                    echo '              <button type="submit" title="Bearbeiten" name="'.PARTICIPANT_EDITING_COMMAND_STRING.'" value="'.$name.'">';
+                    echo '                  <span class="dashicons dashicons-edit"/>';
+                    echo '              </button>';
+                    echo '          </form>';
+                    echo '      </td>';
+                    echo '      <td>';
+                    echo '          <form action="'.get_current_url().'" method="post">';
+                    echo '              <button type="submit" title="Löschen" name="'.PARTICIPANT_DELETION_COMMAND_STRING.'" value="'.$name.'">';
+                    echo '                  <span class="dashicons dashicons-trash"/>';
+                    echo '              </button>';
+                    echo '          </form>';
+                    echo '      </td>';
+                }
+                else {
+                    echo '      <td></td>';
+                    echo '      <td></td>';
+                }
+            }
             echo '  </tr>';
         }
         ?>

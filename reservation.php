@@ -1,4 +1,5 @@
 <?php
+
 // ---- load style ----
 wp_enqueue_style('lebendiger_adventskalender_reservation');
 
@@ -45,27 +46,29 @@ if ($input->inputReceived()) {
 	if ($input_data['image'])
 		$image_upload = '<img id="image_preview" src="'.plugin_dir_url(__FILE__).'img_tmp/'.$input_data['image'].'" alt="Bild" style="max-width: 350px; max-height: 350px;"/> <div id="fine-uploader"></div><input id="la_image" name="la_image" type="hidden" value="'.$input_data['image'].'"/>';
 	
-	if (!$mandatory_field_empty && !$emailerror && !isset($_POST['correct'])) {
-		$readonly = ' readonly';
-		$buttons = '<div class="b" style="margin-bottom: 10px;">Sind die Eingaben korrekt übernommen worden?</div><button type="submit" class="pure-button pure-button-primary" name="correct">korrigieren</button><button type="submit" class="pure-button pure-button-primary" style="margin-left: 10px;" name="confirm">alles korrekt, absenden</button>';
-		if($input_data['image'])
-			$image_upload = '<img id="image_preview" src="'.plugin_dir_url(__FILE__).'img_tmp/'.$input_data['image'].'" alt="Bild" style="max-width: 350px; max-height: 350px;"/><input id="la_image" name="la_image" type="hidden" value="'.$input_data['image'].'"/>';
-		else
-			$image_upload = '<input id="la_image" name="la_image" type="hidden" value=""/>';
-	}
-	
-	if (isset($_POST['confirm'])) {
-		$buttons = '';
-		if ($input_data['image'])
-			copy(plugin_dir_path(__FILE__).'img_tmp/'.$input_data['image'],plugin_dir_path(__FILE__).'img/'.$input_data['image']);
-		else
-			$image_upload = '<input id="la_image" name="la_image" type="hidden" value=""/>';
-		
-		if ($controller->addHost($nr, $input_data)) {
-			$title = '<div class="b">Dein Adventskalender-Türchen wurde hinzugefügt! Cool, dass du mitmachst!</div>';
+	if (!$input->hasError()) {
+		if (!isset($_POST['correct'])) {
+			$readonly = ' readonly';
+			$buttons = '<div class="b" style="margin-bottom: 10px;">Sind die Eingaben korrekt übernommen worden?</div><button type="submit" class="pure-button pure-button-primary" name="correct">korrigieren</button><button type="submit" class="pure-button pure-button-primary" style="margin-left: 10px;" name="confirm">alles korrekt, absenden</button>';
+			if($input_data['image'])
+				$image_upload = '<img id="image_preview" src="'.plugin_dir_url(__FILE__).'img_tmp/'.$input_data['image'].'" alt="Bild" style="max-width: 350px; max-height: 350px;"/><input id="la_image" name="la_image" type="hidden" value="'.$input_data['image'].'"/>';
+			else
+				$image_upload = '<input id="la_image" name="la_image" type="hidden" value=""/>';
 		}
-		else {
-			$title = '<div class="error">Dein Adventskalender-Türchen konnte leider nicht hinzugefügt werden! Versuche es bitte erneut!</div>';
+	
+		if (isset($_POST['confirm'])) {
+			$buttons = '';
+			if ($input_data['image'])
+				copy(plugin_dir_path(__FILE__).'img_tmp/'.$input_data['image'],plugin_dir_path(__FILE__).'img/'.$input_data['image']);
+			else
+				$image_upload = '<input id="la_image" name="la_image" type="hidden" value=""/>';
+			
+			if ($controller->addHost($nr, $input_data)) {
+				$title = '<div class="b">Dein Adventskalender-Türchen wurde hinzugefügt! Cool, dass du mitmachst!</div>';
+			}
+			else {
+				$title = '<div class="error">Dein Adventskalender-Türchen konnte leider nicht hinzugefügt werden! Versuche es bitte erneut!</div>';
+			}
 		}
 	}
 }
