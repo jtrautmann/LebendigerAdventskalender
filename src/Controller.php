@@ -308,12 +308,12 @@ class Controller {
         return $this->input_handler->getDoorNumber();
     }
 
-    public function getReservationMandatoryInput() {
-        return $this->data_handler->getReservationMandatoryInput();
+    public function getHostMandatoryInput() {
+        return $this->data_handler->getHostMandatoryInput();
     }
 
-    public function getRegistrationMandatoryInput() {
-        return $this->data_handler->getRegistrationMandatoryInput();
+    public function getParticipantMandatoryInput() {
+        return $this->data_handler->getParticipantMandatoryInput();
     }
 
     public function getReservationInput() : InputData {

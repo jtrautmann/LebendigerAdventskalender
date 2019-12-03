@@ -7,7 +7,7 @@ wp_enqueue_style('lebendiger_adventskalender_reservation');
 $input = $controller->getReservationInput();
 $input_data = $input->getData();
 
-$mandatory_fields = $controller->getReservationMandatoryInput();
+$mandatory_fields = $controller->getHostMandatoryInput();
 $mandatory = [];
 foreach ($input_data as $key => $value) {
 	if (in_array($key,$mandatory_fields)) {
@@ -59,6 +59,7 @@ if ($input->inputReceived()) {
 		if (isset($_POST['confirm'])) {
 			$buttons = '';
 			if ($input_data['image'])
+				// TODO: change file name to avoid overwriting another file
 				copy(plugin_dir_path(__FILE__).'img_tmp/'.$input_data['image'],plugin_dir_path(__FILE__).'img/'.$input_data['image']);
 			else
 				$image_upload = '<input id="la_image" name="la_image" type="hidden" value=""/>';
