@@ -5,8 +5,9 @@ class Controller {
     private static $controller;
 
     private $data_handler;
-    private $post_manager;
+    private $post_handler;
     private $input_handler;
+    private $mail_handler;
     
     public static function getController() : Controller {
         if (!isset(self::$controller)) {
@@ -18,8 +19,10 @@ class Controller {
     private function __construct() {
         // instantiate attributes
         $this->data_handler = new DataHandler();
-        $this->post_manager = new PostManager();
+        $this->post_handler = new PostHandler();
         $this->input_handler = new InputHandler();
+        // TODO: make mail address of sender configurable
+        $this->mail_handler = new MailHandler('bl-prweb@sfc-karlsruhe.de');
     }
 
     public function getShowState() {
@@ -54,7 +57,7 @@ class Controller {
         if ($this->isActiveCalendar())
             return true;
 
-        $result = $this->post_manager->createPost();
+        $result = $this->post_handler->createPost();
         if (is_wp_error($result))
             return $result;
 
@@ -69,7 +72,7 @@ class Controller {
         $post_id = $this->data_handler->getPostID();
         if (!post_id)
             return false;
-        if (!$this->post_manager->deletePost($post_id))
+        if (!$this->post_handler->deletePost($post_id))
             return false;
 
         $this->data_handler->setInactiveCalendar();
@@ -81,7 +84,18 @@ class Controller {
     }
 
     public function addHost($day, $data) {
-        return $this->data_handler->addHost($day, $data);
+        if (!$this->data_handler->addHost($day, $data)) {
+            return false;
+        }
+
+        // send confirmation mail to host
+        $subject = 'Dein SfC-Adventskalender-Türchen wurde eingetragen';
+        // TODO: add link to page to change the data and see the participants
+        $text = "Dein Adventskalender-Türchen am $day. Dezember";
+        $text .= " wurde erfolgreich eingetragen!";
+        $this->mail_handler->sendMail($data['email'], $subject, $text);
+
+        return true;
     }
 
     public function hasHost($day) {
@@ -93,7 +107,26 @@ class Controller {
     }
 
     public function addParticipant($day, $data) {
-        return $this->data_handler->addParticipant($day, $data);
+        if (!$this->data_handler->addParticipant($day, $data)) {
+            return false;
+        }
+        
+        // send confirmation mail to participant
+        $subject = 'Erfolgreiche Anmeldung zum SfC-Adventskalender-Türchen';
+        $text = "Du hast dich erfolgreich für das Adventskalender-Türchen";
+        $text .= " von heute, den $day. Dezember angemeldet! Viel Spaß bei diesem Türchen!";
+        $this->mail_handler->sendMail($data['email'], $subject, $text);
+
+        // send mail to host
+        $subject = 'Anmeldung zu deinem SfC-Adventskalender-Türchen';
+        $text = "Zu deinem Adventskalender-Türchen von heute, den $day.";
+        $text .= " Dezember hat sich jemand angemeldet:\n";
+        // TODO: do generically
+        $text .= "Name: ".$data['name']."\n";
+        $text .= "E-Mail: ".$data['email'];
+        $this->mail_handler->sendMail($this->getHostInformation($day, 'email'), $subject, $text);
+        
+        return true;
     }
 
     public function getParticipantsNumber($day) {

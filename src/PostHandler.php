@@ -1,6 +1,6 @@
 <?php
 
-class PostManager {
+class PostHandler {
 
     private const SHORTCODE = "lebendiger_adventskalender";
 

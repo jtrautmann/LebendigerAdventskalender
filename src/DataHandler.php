@@ -132,8 +132,8 @@ class DataHandler {
         global $wpdb;
         $data['day'] = $day;
         $data['year'] = $this->year;
-        $wpdb->insert($this->participants_table_name, $data);
-        return $wpdb->insert_id !== false;
+        $result = $wpdb->insert($this->participants_table_name, $data);
+        return $result !== false;
     }
 
     public function getParticipantsNumber($day) {

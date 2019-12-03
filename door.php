@@ -16,8 +16,8 @@ function echo_participant_formular($nr, $input=false, $name=NULL, $email=NULL, $
 			echo ' value="'.$name.'"';
 	}
 	echo '>
-<label for="la_email">E-Mail (optional)</label>
-<input id="la_email" name="la_email" type="email"';
+<label for="la_email">E-Mail</label>
+<input id="la_email" name="la_email" type="email" required';
 	if ($input) {
 		if(!$email)
 			echo '" class="f"';
@@ -114,7 +114,6 @@ else {
 				$valid_email = filter_input(INPUT_POST, 'la_email', FILTER_VALIDATE_EMAIL);
 				if ($inputs['la_name'] && $inputs['la_email'] && $valid_email) {
 					// registration
-					// TODO: send email to participant and host
 					// TODO: do generically
 					$data = [];
 					foreach ($inputs as $key => $value) {

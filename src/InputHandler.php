@@ -4,7 +4,7 @@ class InputHandler {
 
     private $nr;
 
-    function __construct() {
+    public function __construct() {
         // set input variables
         $this->nr = filter_input(INPUT_GET,'nr',FILTER_SANITIZE_NUMBER_INT);
         if ($this->nr < 1 || $this->nr > 24) {
@@ -12,11 +12,11 @@ class InputHandler {
         }
     }
 
-    function doorNumberSet() {
+    public function doorNumberSet() {
         return isset($this->nr);
     }
 
-    function getDoorNumber() {
+    public function getDoorNumber() {
         return $this->nr;
     }
 

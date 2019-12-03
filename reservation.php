@@ -96,25 +96,9 @@ if ($_SERVER['REQUEST_METHOD']=="POST") {
 		if ($controller->addHost($nr, $data)) {
 			$title = '<div class="b">Dein Adventskalender-Türchen wurde hinzugefügt! Cool, dass du mitmachst!</div>';
 		}
-		else
+		else {
 			$title = '<div class="error">Dein Adventskalender-Türchen konnte leider nicht hinzugefügt werden! Versuche es bitte erneut!</div>';
-		
-		// send confirmation mail to host
-		// TODO: make mail address of sender configurable
-		$sender = 'bl-prweb@sfc-karlsruhe.de';
-		$subject = 'Dein SfC-Adventskalender-Türchen wurde eingetragen';
-		$encoded_subject = '=?utf-8?B?'.base64_encode($subject).'?=';
-		// TODO: add link to page to change the data and see the participants
-		$text = "Dein Adventskalender-Türchen am ".WEEK_DAYS[$w].", den $nr";
-		$text .= ". Dezember wurde erfolgreich eingetragen!";
-		$headers = [];
-		$headers[] = "MIME-Version: 1.0";
-		$headers[] = "Content-type: text/plain; charset=utf-8";
-		$headers[] = "From: $sender";
-		$headers[] = "Reply-To: $sender";
-		$headers[] = "X-Mailer: PHP/".phpversion();
-		
-		mail($inputs['la_email'], $encoded_subject, $text, implode("\r\n",$headers));
+		}
 	}
 }
 
