@@ -93,7 +93,8 @@ else {
 	}
 	$randshift = rand(1,5);
 	$emailShifted = shift($controller->getHostInformation($nr, 'email'), $randshift);
-	echo '<tr><td class="l">E-Mail:</td><td><a href="javascript:linkTo_UnCryptMailto(\''.$emailShifted.'\','.$randshift.')"><script type="text/javascript">document.write(UnCrypt(\''.$emailShifted.'\','.$randshift.'));</script></a></td></tr>';
+	echo '<tr><td class="l">E-Mail:</td><td><a href="javascript:linkTo_UnCryptMailto(\''.$emailShifted.'\','.$randshift.')" id="la_email"></a></td></tr>';
+	echo '<script type="text/javascript">document.getElementById("la_email").innerHTML = UnCrypt(\''.$emailShifted.'\','.$randshift.');</script>';
 	echo '</table>';
 	echo '<br/></div></div>';
 	$image = $controller->getHostInformation($nr, 'image');
