@@ -227,8 +227,8 @@ class DataHandler {
 
     public function hasHost($day) {
         global $wpdb;
-        $sql = "SELECT COUNT(1) FROM $this->hosts_table_name WHERE day = $day AND year = $this->year;";
-        return $wpdb->get_var($sql);
+        $sql = "SELECT COUNT(1) FROM $this->hosts_table_name WHERE day = %d AND year = $this->year;";
+        return $wpdb->get_var($wpdb->prepare($sql, $day));
     }
 
     /**
@@ -241,8 +241,8 @@ class DataHandler {
      */
     public function getHostInformation($day, $var) {
         global $wpdb;
-        $sql = "SELECT $var FROM $this->hosts_table_name WHERE day = $day AND year = $this->year;";
-        $val = $wpdb->get_var($sql);
+        $sql = "SELECT $var FROM $this->hosts_table_name WHERE day = %d AND year = $this->year;";
+        $val = $wpdb->get_var($wpdb->prepare($sql,$day));
         // check for bool
         $type = $this->getHostVariableType($var);
         if ($type == self::VALUE_TYPE_BOOLEAN) {
@@ -302,15 +302,16 @@ class DataHandler {
 
     public function hasParticipant($day, $name) {
         global $wpdb;
-        $sql = "SELECT COUNT(1) FROM $this->participants_table_name WHERE day = $day AND year = $this->year";
-        $sql.=  " AND name = '$name';";
-        return $wpdb->get_var($sql);
+        $sql = "SELECT COUNT(1) FROM $this->participants_table_name WHERE day = %d AND year = $this->year";
+        $sql.=  " AND name = %s;";
+        return $wpdb->get_var($wpdb->prepare($sql,$day,$name));
     }
 
     public function getParticipantsNumber($day) {
         global $wpdb;
-        $sql = "SELECT COUNT(*) FROM $this->participants_table_name WHERE day = $day AND year = $this->year;";
-        return $wpdb->get_var($sql);
+        $sql = "SELECT COUNT(*) FROM $this->participants_table_name WHERE day = %d AND year = $this->year;";
+        $result = $wpdb->get_var($wpdb->prepare($sql,$day));
+        return $result;
     }
 
     /**
@@ -325,16 +326,16 @@ class DataHandler {
     public function getParticipantInformation($day, $participant, $var) {
         global $wpdb;
 
-        $sql = "SELECT $var FROM $this->participants_table_name WHERE day = $day AND year = $this->year";
+        $sql = "SELECT $var FROM $this->participants_table_name WHERE day = %d AND year = $this->year";
         
         if (is_int($participant)) {
             // index
-            return $wpdb->get_var($sql.";", 0, $participant);
+            return $wpdb->get_var($wpdb->prepare($sql.";",$day), 0, $participant);
         }
 
         // name
-        $sql .= " AND name = '$participant';";
-        return $wpdb->get_var($sql);
+        $sql .= " AND name = %s;";
+        return $wpdb->get_var($wpdb->prepare($sql,$day,$participant));
     }
 
     public function getParticipantMandatoryInput() {
@@ -358,5 +359,3 @@ class DataHandler {
     }
 
 }
-
-?>

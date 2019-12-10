@@ -48,5 +48,3 @@ function remove_param($url, $param) {
 	
 	return $url_parts['scheme'] . '://' . $url_parts['host'] . $url_parts['path'] . '?' . $url_parts['query'];
 }
-
-?>
